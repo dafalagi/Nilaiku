@@ -43,6 +43,8 @@ INSTALLED_APPS = [
     'djecrety',
     'django_browser_reload',
     'dashboard',
+    'grader',
+    'preview',
 ]
 
 MIDDLEWARE = [

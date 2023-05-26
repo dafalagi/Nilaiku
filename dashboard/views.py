@@ -60,6 +60,8 @@ def show(request, id):
 
 def index(request):
     grader = Grader.objects.all()
-    return render(request, 'admin/pages/data-tables.html', {
-        'grader': grader
+    fields = Grader._meta.get_fields()
+    return render(request, 'admin/tables/tables-data.html', {    
+        'graders': grader,
+        'fields': fields
     })
