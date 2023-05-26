@@ -1,0 +1,65 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+  
+  {% block page_title %}
+    <title>Dashboard - NiceAdmin Bootstrap Template</title>
+  {% endblock page_title %}
+    
+  <meta content="" name="description">
+  <meta content="" name="keywords">
+
+  {% include 'admin/partials/styles.html' %}
+
+  <!-- =======================================================
+  * Template Name: NiceAdmin
+  * Updated: Mar 09 2023 with Bootstrap v5.2.3
+  * Template URL: https://bootstrapmade.com/nice-admin-bootstrap-admin-html-template/
+  * Author: BootstrapMade.com
+  * License: https://bootstrapmade.com/license/
+  ======================================================== -->
+</head>
+
+<body>
+    <!-- ======= Header ======= -->
+    <header id="header" class="header fixed-top d-flex align-items-center">
+
+        <div class="d-flex align-items-center justify-content-between">
+        <a href="/admin" class="logo d-flex align-items-center">
+            <img src="{% static 'admin/img/logo.png' %}" alt="">
+            <span class="d-none d-lg-block">NiceAdmin</span>
+        </a>
+        <i class="bi bi-list toggle-sidebar-btn"></i>
+        </div><!-- End Logo -->
+
+        <div class="search-bar">
+        <form class="search-form d-flex align-items-center" method="POST" action="#">
+            <input type="text" name="query" placeholder="Search" title="Enter search keyword">
+            <button type="submit" title="Search"><i class="bi bi-search"></i></button>
+        </form>
+        </div><!-- End Search Bar -->
+
+        {% include 'admin/components/navbar.html' %}
+
+    </header><!-- End Header -->
+
+    {% include 'admin/components/sidebar.html' %}
+    
+    {% block main_content %}
+        
+    {% endblock main_content %}  
+
+    {% include 'admin/components/footer.html' %}
+
+    <a href="#" class="back-to-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
+
+    {% include 'admin/partials/scripts.html' %}
+
+</body>
+
+</html>

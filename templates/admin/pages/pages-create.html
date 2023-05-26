@@ -1,0 +1,61 @@
+{% extends 'admin/partials/base.html' %}
+{% load static %}
+
+{% block main_content %}
+    <main id="main" class="main">
+
+        <div class="pagetitle">
+        <h1>Form Layouts</h1>
+        <nav>
+            <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="index.html">Home</a></li>
+            <li class="breadcrumb-item">Forms</li>
+            <li class="breadcrumb-item active">Layouts</li>
+            </ol>
+        </nav>
+        </div><!-- End Page Title -->
+        <section class="section">
+        <div class="row">
+            <div class="col">
+                <div class="card">
+                    <div class="card-body">
+                    <h5 class="card-title">Add New Post</h5>
+                        
+                        <!-- Floating Labels Form -->
+                        <form class="row g-3" action="/admin/create/" method="post">
+                            {% csrf_token %}
+                            <div class="col-md-12">
+                                
+                                {% for message in messages %}
+                                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                                        {{ message }}
+                                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                    </div>
+                                {% endfor %}
+                                    
+                                <div class="form-floating">
+                                    <input type="text" class="form-control" id="floatingName" placeholder="Title" name="title">
+                                    <label for="floatingName">Title</label>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="form-floating">
+                                    <textarea class="form-control" placeholder="Body" id="floatingTextarea" style="height: 100px;"
+                                    name="body"></textarea>
+                                    <label for="floatingTextarea">Body</label>
+                                </div>
+                            </div>
+                            <div class="text-center">
+                                <button type="submit" class="btn btn-primary">Submit</button>
+                                <button type="reset" class="btn btn-secondary">Reset</button>
+                            </div>
+                        </form><!-- End floating Labels Form -->
+                    </div>
+                </div>
+            </div>
+        </div>
+        </section>
+
+    </main><!-- End #main -->
+{% endblock main_content %}
+    
