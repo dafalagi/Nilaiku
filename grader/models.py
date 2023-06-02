@@ -7,12 +7,9 @@ class Grader(models.Model):
         max_length=254,
         null=True,
         )
-    optimized_dir = models.CharField(
+    unoptimized_dir = models.CharField(
         max_length=254,
         null=True,
         )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-
-    def __str__(self):
-        return self.title
