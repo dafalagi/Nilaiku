@@ -1502,7 +1502,7 @@ section {
 # Contact
 --------------------------------------------------------------*/
 .contact {
-  background: url("../img/contact-bg.png") left center no-repeat;
+  background: url("../img/contact-bg.png") center no-repeat;
   position: relative;
 }
 
@@ -1563,10 +1563,6 @@ section {
   background: #fff;
 }
 
-.contact .php-email-form .form-group {
-  padding-bottom: 8px;
-}
-
 .contact .php-email-form .error-message {
   display: none;
   color: #fff;
@@ -1613,10 +1609,6 @@ section {
   border-radius: 4px;
   box-shadow: none;
   font-size: 14px;
-}
-
-.contact .php-email-form input {
-  height: 44px;
 }
 
 .contact .php-email-form textarea {

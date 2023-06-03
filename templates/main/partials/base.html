@@ -25,10 +25,14 @@
 <body>
 
   <!-- ======= Header ======= -->
-  <header id="header" class="fixed-top d-flex align-items-center ">
+  <header id="header" class="fixed-top d-flex align-items-center
+  {% if request.get_full_path == "/blog/" %}
+    header-inner-pages
+  {% endif %}
+  ">
     <div class="container d-flex align-items-center justify-content-between">
 
-      <h1 class="logo"><a href="index.html">Nilaiku</a></h1>
+      <h1 class="logo"><a href="{% url 'home' %}">Nilaiku</a></h1>
       <!-- Uncomment below if you prefer to use an image logo -->
       <!-- <a href=index.html" class="logo"><img src="assets/img/logo.png" alt="" class="img-fluid"></a>-->
 
