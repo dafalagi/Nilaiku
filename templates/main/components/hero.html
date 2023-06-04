@@ -1,5 +1,9 @@
 <!-- ======= Hero Section ======= -->
-<section id="hero" class="d-flex justify-cntent-center align-items-center">
+<section id="hero" class="d-flex justify-cntent-center align-items-center"
+{% if request.path == '/home/' %}
+  style="margin-bottom: -90px;"
+{% endif %}
+  >
     <div id="heroCarousel" class="container carousel">
 
       <!-- Slide 1 -->

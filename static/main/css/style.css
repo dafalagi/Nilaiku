@@ -426,7 +426,6 @@ h6 {
   background: url("../img/hero-bg.jpg") top center;
   background-size: cover;
   position: relative;
-  margin-bottom: -90px;
   z-index: 99;
   transition: 0.3s;
 }
@@ -1615,7 +1614,7 @@ section {
   padding: 10px 12px;
 }
 
-.contact .php-email-form button[type=submit] {
+.contact .submit-form button[type=submit] {
   border: 0;
   padding: 10px 32px;
   color: #0880e8;
@@ -1625,7 +1624,7 @@ section {
   background: #fff;
 }
 
-.contact .php-email-form button[type=submit]:hover {
+.contact .submit-form button[type=submit]:hover {
   background: #0880e8;
   color: #fff;
 }

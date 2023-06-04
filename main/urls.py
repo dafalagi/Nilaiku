@@ -23,6 +23,8 @@ urlpatterns = [
     path('user/', include('user.urls')),
     path('grader/', include('grader.urls')),
     path('preview/', include('preview.urls')),
-    path('', views.home, name='home'),
+    path('', views.index),
+    path('home/', views.home, name='home'),
     path('blog/', views.blog, name='blog'),
+    path('upload/', views.upload, name='upload')
 ]

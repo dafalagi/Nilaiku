@@ -1,0 +1,25 @@
+{% extends 'main/partials/base.html' %}
+  
+{% load static %}
+
+{% block main_content %}
+
+<!-- ======= Hero Section ======= -->
+<section id="hero" class="d-flex justify-cntent-center align-items-center">
+    <div id="heroCarousel" class="container carousel">
+
+      <!-- Slide 1 -->
+      <div class="carousel-item active">
+        <div class="carousel-container">
+          <h2 class="animate__animated animate__fadeInDown">Selamat Datang di <span>Nilaiku</span></h2>
+          <p class="animate__animated animate__fadeInUp">
+            Silahkan masuk menggunakan akun Google Anda untuk melanjutkan.
+          </p>
+          <a href="{% url 'home' %}" class="btn-get-started animate__animated animate__fadeInUp scrollto">Masuk menggunakan akun Google</a>
+        </div>
+      </div>
+
+    </div>
+</section><!-- End Hero -->
+
+{% endblock main_content %}

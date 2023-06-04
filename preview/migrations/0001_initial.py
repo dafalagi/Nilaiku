@@ -12,14 +12,11 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.CreateModel(
-            name='Grader',
+            name='Preview',
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('answer_key', models.CharField(max_length=254)),
-                ('height', models.IntegerField()),
-                ('choices', models.IntegerField()),
-                ('max_q', models.IntegerField()),
-                ('max_mark', models.IntegerField()),
+                ('form_type', models.CharField(max_length=100)),
+                ('form_image', models.ImageField(upload_to='images/')),
                 ('created_at', models.DateTimeField(auto_now_add=True)),
                 ('updated_at', models.DateTimeField(auto_now=True)),
             ],
