@@ -1,8 +1,9 @@
 from django.shortcuts import render
 from preview.models import Preview
 from grader.models import Grader
-import json, os 
-from .keyUtils import keyUtils as ku
+from .keyUtils import keyUtils
+from .answerUtils import answerUtils
+import json
 
 # Create your views here.
 def updateKey(preview_id, answer_key):
@@ -19,38 +20,44 @@ def updateResult(preview_id, result):
 
     return True
 
-def keyType(preview_id):
-    preview = Preview.objects.get(id=preview_id)
-    path = 'media/'+preview.warped_image.name
-
-    features = ku.imgFeatures(preview_id)
-    preprocessed = ku.preprocessing(path)
-    result, key = ku.processKey(path, features, preprocessed)
-
-    cv2.imwrite('media/images/result'+preview.form_image.name, result)
-    basename = os.path.basename(preview.form_image.name)
-    path = 'images/result'+basename
-
-    updateResult(preview_id, path)
-    updateKey(preview_id, key)
-
-    return True
-
 def grade(request):
     preview_id = request.POST.get('preview_id')
     form_type = request.POST.get('form_type')
 
+    ku = keyUtils()
+    au = answerUtils()
+
     if form_type == 'key':
-        keyType(preview_id)
+        path, key = ku.keyType(preview_id)
+        updateResult(preview_id, path)
+        updateKey(preview_id, key)
+
+        grader = Grader.objects.get(preview_id=preview_id)
     elif form_type == 'answer':
-        typeAnswer(preview_id)
+        path, correct, wrong, score = au.answerType(preview_id)
+        updateResult(preview_id, path)
+
+        grader = Grader.objects.get(preview_id=9)
 
     preview = Preview.objects.get(id=preview_id)
-    grader = Grader.objects.get(preview_id=preview_id)
-
     key = json.loads(grader.answer_key)
 
+    if form_type == 'key':
+        result = {
+            'img': preview.result_image,
+            'key': key,
+            'form_type': form_type
+        }
+    elif form_type == 'answer':
+        result = {
+            'img': preview.result_image,
+            'correct': correct,
+            'wrong': wrong,
+            'score': "%.1f" % score,
+            'key': key,
+            'form_type': form_type
+        }
+
     return render(request, 'main/pages/main-content.html', {
-        'result': preview.result_image,
-        'key': key,
+        'result': result
     })

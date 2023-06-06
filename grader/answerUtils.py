@@ -1,46 +1,39 @@
-from grader.models import Grader
+from .models import Preview, Grader
 from .utils import Utils
-import cv2, numpy as np, json
+import numpy as np
+import cv2, json, os
 
-class keyUtils:
-    def imgFeatures(preview_id):
-        grader = Grader.objects.get(preview_id=preview_id)
+class answerUtils:
+    def answerType(self, preview_id):
+        preview = Preview.objects.get(id=preview_id)
+        path = 'media/'+preview.warped_image.name
 
-        max_mark = grader.max_mark
-        max_q = grader.max_q
-        choices = grader.choices
-        height = grader.height
-        batch = int(max_q/height)
-        width = int((max_q*choices)/height)
+        utils = Utils()
+        features = utils.imgFeatures(9)
+        preprocessed = utils.preprocessing(path)
 
-        return {
-            'max_mark': max_mark,
-            'max_q': max_q,
-            'choices': choices,
-            'height': height,
-            'batch': batch,
-            'width': width
-        }
+        result, correct, wrong = self.answerProcess(path, features, preprocessed)
+        score = self.scoring(correct, wrong, features['max_mark'])
 
-    def preprocessing(path):
+        basename = os.path.basename(preview.form_image.name)
+        cv2.imwrite('media/images/result'+basename, result)
+        path = 'images/result'+basename
+
+        return path, correct, wrong, score
+
+    def answerProcess(self, path, features, preprocessed):
+        ANSWER_KEY = dict([[0, 2], [10, 4], [20, 0], [30, 4], [1, 0], [11, 2], [21, 2], [31, 0], [2, 1], [12, 1], [22, 3], [32, 3], [3, 2], [13, 3], [23, 2], [33, 2], [4, 0], [14, 4], [24, 3], [34, 0], [5, 4], [15, 2], [25, 4], [6, 4], [16, 4], [26, 0], [7, 2], [17, 3], [27, 0], [8, 1], [18, 1], [28, 3], [9, 2], [19, 2], [29, 4]])
         img = cv2.imread(path)
-
-        imgWarpedGray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-        imgWarpedBlur = cv2.GaussianBlur(imgWarpedGray, (5, 5), 0)
-        imgThre = cv2.adaptiveThreshold(imgWarpedBlur, 255,cv2.ADAPTIVE_THRESH_GAUSSIAN_C,cv2.THRESH_BINARY_INV,19,2)
-
-        return imgThre
-
-    def processKey(path, features, preprocessed):
-        img = cv2.imread(path)
-        key = []
+        correct = 0
+        wrong = 0
+        utils = Utils()
 
         contours, hierarchy = cv2.findContours(preprocessed, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-        questions = Utils.find_questions(contours, img)
-        questionCnts = Utils.find_ques_cnts(questions, features['width'])
+        questions = utils.find_questions(contours, img)
+        questionCnts = utils.find_ques_cnts(questions, features['width'])
 
         for (q, i) in enumerate(np.arange(0, len(questionCnts), features['choices'])):
-            old_question_no = Utils.convert_ques_no(q, features['height'], features['batch'])
+            old_question_no = utils.convert_ques_no(q, features['height'], features['batch'])
 
             cnts = questionCnts[i:i+features['choices']]
             bubbled = [0, 0, 0]
@@ -59,14 +52,23 @@ class keyUtils:
                         bubbled = (old_question_no, total, j)
                     elif bubbled[1] < total:
                         bubbled = (old_question_no, total, j)
-            color = (0, 255, 0)
+            color = (0, 0, 255)
             if old_question_no >= features['max_mark']:
                 pass
             else:
-                key.append([bubbled[0], bubbled[2]])
-                cv2.drawContours(img, [cnts[bubbled[2]]], -1, color, 2)
+                k = ANSWER_KEY[old_question_no]
 
-        key = dict(key)
-        key = json.dumps(key)
+                if k == bubbled[2]:
+                    color = (0, 255, 0)
+                    cv2.drawContours(img, [cnts[k]], -1, color, 2)
+                    correct += 1
+                elif k != bubbled[2]:
+                    cv2.drawContours(img, [cnts[k]], -1, color, 2)
+                    wrong += 1
 
-        return img, key
+        return img, correct, wrong
+
+    def scoring(self, correct, wrong, max_mark):
+        score = correct/max_mark*100
+
+        return score

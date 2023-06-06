@@ -1,46 +1,36 @@
-from grader.models import Grader
+from .models import Preview
 from .utils import Utils
-import cv2, numpy as np, json
+import numpy as np
+import cv2, json, os
 
 class keyUtils:
-    def imgFeatures(preview_id):
-        grader = Grader.objects.get(preview_id=preview_id)
+    def keyType(self, preview_id):
+        preview = Preview.objects.get(id=preview_id)
+        path = 'media/'+preview.warped_image.name
 
-        max_mark = grader.max_mark
-        max_q = grader.max_q
-        choices = grader.choices
-        height = grader.height
-        batch = int(max_q/height)
-        width = int((max_q*choices)/height)
+        utils = Utils()
+        features = utils.imgFeatures(preview_id)
+        preprocessed = utils.preprocessing(path)
 
-        return {
-            'max_mark': max_mark,
-            'max_q': max_q,
-            'choices': choices,
-            'height': height,
-            'batch': batch,
-            'width': width
-        }
+        result, key = self.keyProcess(path, features, preprocessed)
 
-    def preprocessing(path):
-        img = cv2.imread(path)
+        basename = os.path.basename(preview.form_image.name)
+        cv2.imwrite('media/images/result'+basename, result)
+        path = 'images/result'+basename
 
-        imgWarpedGray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-        imgWarpedBlur = cv2.GaussianBlur(imgWarpedGray, (5, 5), 0)
-        imgThre = cv2.adaptiveThreshold(imgWarpedBlur, 255,cv2.ADAPTIVE_THRESH_GAUSSIAN_C,cv2.THRESH_BINARY_INV,19,2)
+        return path, key
 
-        return imgThre
-
-    def processKey(path, features, preprocessed):
+    def keyProcess(self, path, features, preprocessed):
         img = cv2.imread(path)
         key = []
+        utils = Utils()
 
         contours, hierarchy = cv2.findContours(preprocessed, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-        questions = Utils.find_questions(contours, img)
-        questionCnts = Utils.find_ques_cnts(questions, features['width'])
+        questions = utils.find_questions(contours, img)
+        questionCnts = utils.find_ques_cnts(questions, features['width'])
 
         for (q, i) in enumerate(np.arange(0, len(questionCnts), features['choices'])):
-            old_question_no = Utils.convert_ques_no(q, features['height'], features['batch'])
+            old_question_no = utils.convert_ques_no(q, features['height'], features['batch'])
 
             cnts = questionCnts[i:i+features['choices']]
             bubbled = [0, 0, 0]
