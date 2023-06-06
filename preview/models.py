@@ -10,5 +10,7 @@ class Preview(models.Model):
     #     )
     form_type = models.CharField(max_length=100)
     form_image = models.ImageField(upload_to='images/')
+    warped_image = models.ImageField(upload_to='images/', null=True)
+    result_image = models.ImageField(upload_to='images/', null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

@@ -608,7 +608,6 @@ section {
 # About Us
 --------------------------------------------------------------*/
 .about {
-  padding: 140px 0;
   background: url("../img/about-bg.png") top center no-repeat;
   position: relative;
 }
@@ -659,7 +658,28 @@ section {
   margin-bottom: 0;
 }
 
-.about .content .btn-learn-more {
+.about .content .btn-continue {
+  font-family: "Raleway", sans-serif;
+  font-weight: 600;
+  font-size: 14px;
+  letter-spacing: 1px;
+  display: inline-block;
+  padding: 12px 32px;
+  border-radius: 5px;
+  transition: 0.3s;
+  line-height: 1;
+  color: #fff;
+  background: #0880e8;
+  animation-delay: 0.8s;
+  margin-top: 6px;
+  border: 2px solid #0880e8;
+}
+
+.about .content .btn-continue:hover {
+  transform: scale(1.1);
+}
+
+.about .content .btn-reupload {
   font-family: "Raleway", sans-serif;
   font-weight: 600;
   font-size: 14px;
@@ -675,16 +695,8 @@ section {
   border: 2px solid #0880e8;
 }
 
-.about .content .btn-learn-more:hover {
-  background: #0880e8;
-  color: #fff;
-  text-decoration: none;
-}
-
-@media (max-width: 992px) {
-  .about {
-    padding: 60px 0;
-  }
+.about .content .btn-reupload:hover {
+  transform: scale(1.1);
 }
 
 /*--------------------------------------------------------------
@@ -1501,8 +1513,10 @@ section {
 # Contact
 --------------------------------------------------------------*/
 .contact {
-  background: url("../img/contact-bg.png") center no-repeat;
+  background: url("../img/book-bg.jpg") center no-repeat;
   position: relative;
+  background-color: rgba(255,255,255,0.9);
+  background-blend-mode: lighten;
 }
 
 .contact:before {
@@ -1645,7 +1659,7 @@ section {
 .breadcrumbs {
   padding: 15px 0;
   background: #ecf6fe;
-  margin-top: 130px;
+  margin-top: 70px;
 }
 
 .breadcrumbs h2 {

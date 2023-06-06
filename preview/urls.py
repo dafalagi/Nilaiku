@@ -2,5 +2,6 @@ from django.urls import path
 from . import views
 
 urlpatterns = [
-    path('<str:preview_id>', views.index, name='preview'),
+    path('upload/', views.upload, name='upload'),
+    path('<int:preview_id>', views.preview, name='preview'),
 ]

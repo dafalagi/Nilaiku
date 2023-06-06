@@ -1,4 +1,5 @@
 from django.db import models
+from preview.models import Preview
 
 # Create your models here.
 class Grader(models.Model):
@@ -8,9 +9,11 @@ class Grader(models.Model):
     #     on_delete=models.CASCADE,
     #     on_update=models.CASCADE,
     #     )
-    answer_key = models.CharField(
-        max_length=254,
+    preview = models.ForeignKey(
+        Preview, 
+        on_delete=models.CASCADE,
         )
+    answer_key = models.JSONField(blank=True, null=True)
     height = models.IntegerField()
     choices = models.IntegerField()
     max_q = models.IntegerField()

@@ -1,0 +1,43 @@
+{% load static %}
+
+<!-- ======= Portfolio Section ======= -->
+<section id="portfolio" class="portfoio" 
+style="
+margin-bottom: -5rem;
+margin-top: 70px;
+">
+    <div class="container" data-aos="fade-up">
+
+      <div class="section-title" style="margin-top: -2rem;">
+        <h2>Hasil Penilaian</h2>
+        <p>
+          Berikut adalah hasil pemrosesan LJK yang anda unggah. LJK yang anda unggah merupakan kunci jawaban dan telah tersimpan oleh sistem.
+
+        </p>
+      </div>
+
+      <div class="row portfolio-container">
+
+        <div class="col-lg-6 col-md-6 portfolio-item filter-web">
+          <img src="{{ result.url }}" class="img-fluid" alt="">
+          <div class="portfolio-info">
+            <h4>Area Pilihan Ganda</h4>
+            <p>Ini adalah area pilihan ganda hasil pemrosesan.</p>
+            <a href="{{ result.url }}" data-gallery="portfolioGallery" class="portfolio-lightbox preview-link" title="Area Pilihan Ganda">
+              <span style="font-size: large;">Lihat</span>
+            </a>
+          </div>
+        </div>
+
+        <div class="col-lg-6 col-md-6 portfolio-item filter-web">
+          <h5>Benar:</h5>
+          <h5>Salah:</h5>
+          <br>
+          <h4>Nilai:</h4>
+          <h5>Jawaban: {{ key }}</h5>
+        </div>
+
+      </div>
+
+    </div>
+</section><!-- End Portfolio Section -->

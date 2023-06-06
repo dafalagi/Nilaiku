@@ -1,0 +1,48 @@
+{% load static %}
+
+<!-- ======= Portfolio Section ======= -->
+<section id="portfolio" class="portfoio" 
+style="
+margin-bottom: -5rem;
+margin-top: 70px;
+">
+    <div class="container" data-aos="fade-up">
+
+      <div class="section-title" style="margin-top: -2rem;">
+        <h2>Pratinjau LJK</h2>
+        <p>Berikut adalah hasil pemrosesan awal sebelum melakukan penilaian. Silahkan klik lihat
+          untuk melihat gambar lebih rinci. Apabila terdapat masalah pada gambar, silahkan foto ulang LJK Anda.
+        </p>
+      </div>
+
+      <div class="row portfolio-container">
+
+        <div class="col-lg-6 col-md-6 portfolio-item filter-app">
+          
+            
+          <img src="{{ original.url }}" class="img-fluid" alt="" 
+          style="width: 100%; height: 500px;">
+          <div class="portfolio-info">
+            <h4>Foto LJK</h4>
+            <p>Ini adalah foto LJK hasil unggahan Anda.</p>
+            <a href="{{ original.url }}" data-gallery="portfolioGallery" class="portfolio-lightbox preview-link" title="Foto LJK">
+              <span style="font-size: large;">Lihat</span>
+            </a>
+          </div>
+        </div>
+
+        <div class="col-lg-6 col-md-6 portfolio-item filter-web">
+          <img src="{{ warped.url }}" class="img-fluid" alt="">
+          <div class="portfolio-info">
+            <h4>Area Pilihan Ganda</h4>
+            <p>Ini adalah area pilihan ganda hasil pemrosesan awal.</p>
+            <a href="{{ warped.url }}" data-gallery="portfolioGallery" class="portfolio-lightbox preview-link" title="Area Pilihan Ganda">
+              <span style="font-size: large;">Lihat</span>
+            </a>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+</section><!-- End Portfolio Section -->
