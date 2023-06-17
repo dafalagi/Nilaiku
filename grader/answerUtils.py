@@ -1,28 +1,28 @@
-from .models import Preview, Grader
+from .models import imgDir
 from .utils import Utils
 import numpy as np
 import cv2, json, os
 
 class answerUtils:
-    def answerType(self, preview_id):
-        preview = Preview.objects.get(id=preview_id)
-        path = 'media/'+preview.warped_image.name
+    def answerType(self, img_id):
+        img = imgDir.objects.get(id=img_id)
+        path = 'media/'+img.warped_image.name
 
         utils = Utils()
         features = utils.imgFeatures(9)
-        preprocessed = utils.preprocessing(path)
+        preprocessed = utils.roiPreprocessing(path)
 
         result, correct, wrong = self.answerProcess(path, features, preprocessed)
         score = self.scoring(correct, wrong, features['max_mark'])
 
-        basename = os.path.basename(preview.form_image.name)
+        basename = os.path.basename(img.form_image.name)
         cv2.imwrite('media/images/result'+basename, result)
         path = 'images/result'+basename
 
         return path, correct, wrong, score
 
     def answerProcess(self, path, features, preprocessed):
-        ANSWER_KEY = dict([[0, 2], [10, 4], [20, 0], [30, 4], [1, 0], [11, 2], [21, 2], [31, 0], [2, 1], [12, 1], [22, 3], [32, 3], [3, 2], [13, 3], [23, 2], [33, 2], [4, 0], [14, 4], [24, 3], [34, 0], [5, 4], [15, 2], [25, 4], [6, 4], [16, 4], [26, 0], [7, 2], [17, 3], [27, 0], [8, 1], [18, 1], [28, 3], [9, 2], [19, 2], [29, 4]])
+        ANSWER_KEY = {'0': 2, '10': 4, '20': 0, '30': 4, '1': 0, '11': 2, '21': 2, '31': 0, '2': 1, '12': 1, '22': 3, '32': 3, '3': 2, '13': 3, '23': 2, '33': 2, '4': 0, '14': 4, '24': 3, '34': 0, '5': 4, '15': 2, '25': 4, '6': 4, '16': 4, '26': 0, '7': 2, '17': 3, '27': 0, '8': 1, '18': 1, '28': 3, '9': 2, '19': 2, '29': 4}
         img = cv2.imread(path)
         correct = 0
         wrong = 0
@@ -56,7 +56,7 @@ class answerUtils:
             if old_question_no >= features['max_mark']:
                 pass
             else:
-                k = ANSWER_KEY[old_question_no]
+                k = ANSWER_KEY[str(old_question_no)]
 
                 if k == bubbled[2]:
                     color = (0, 255, 0)

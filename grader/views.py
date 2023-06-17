@@ -1,63 +1,78 @@
-from django.shortcuts import render
-from preview.models import Preview
-from grader.models import Grader
+from django.shortcuts import render, redirect, reverse
 from .keyUtils import keyUtils
 from .answerUtils import answerUtils
+from .modelUtils import modelUtils
+from .utils import Utils 
+from .forms import UploadForm, KeyForm
+from .models import Image, AnswerKey, GradeDetail
+import grader.models as models
 import json
 
 # Create your views here.
-def updateKey(preview_id, answer_key):
-    grader = Grader.objects.get(preview_id=preview_id)
-    grader.answer_key = answer_key
-    grader.save()
+def upload(request):
+    upload = UploadForm(request.POST, request.FILES)
 
-    return True
+    if upload.is_valid():
+        upload = upload.save()
 
-def updateResult(preview_id, result):
-    preview = Preview.objects.get(id=preview_id)
-    preview.result_image = result
-    preview.save()
+        if (upload.form_type == 'key'):    
+            key = KeyForm(request.POST)
 
-    return True
+            if key.is_valid():
+                key = key.save(commit=False)
+                key.image = upload
+                key.save()
+        elif (upload.form_type == 'answer'):
+            answer = AnswerForm(request.POST)
 
-def grade(request):
-    preview_id = request.POST.get('preview_id')
-    form_type = request.POST.get('form_type')
+            if answer.is_valid():
+                answer.save()
 
-    ku = keyUtils()
-    au = answerUtils()
+        utils = Utils()
+        if utils.isTiny(upload.form_image):
+            return redirect(reverse('grading', kwargs={'img_id': upload.id}))
 
-    if form_type == 'key':
-        path, key = ku.keyType(preview_id)
-        updateResult(preview_id, path)
-        updateKey(preview_id, key)
+def grading(request, img_id):
+    img = Images.objects.get(id=img_id)
+    path = img.form_image
+    form_type = img.form_type
 
-        grader = Grader.objects.get(preview_id=preview_id)
-    elif form_type == 'answer':
-        path, correct, wrong, score = au.answerType(preview_id)
-        updateResult(preview_id, path)
+    utils = Utils()    
+    warped = utils.warping(path)
 
-        grader = Grader.objects.get(preview_id=9)
+    if updateWarped(img_id, warped):
+        if form_type == 'key':
+            ku = keyUtils()
+            path, key = ku.keyType(img_id)
 
-    preview = Preview.objects.get(id=preview_id)
-    key = json.loads(grader.answer_key)
+            updateResult(img_id, path)
+            updateKey(img_id, key)
+        elif form_type == 'answer':
+            au = answerUtils()
+            path, correct, wrong, score = au.answerType(img_id)
 
-    if form_type == 'key':
-        result = {
-            'img': preview.result_image,
-            'key': key,
-            'form_type': form_type
-        }
-    elif form_type == 'answer':
-        result = {
-            'img': preview.result_image,
-            'correct': correct,
-            'wrong': wrong,
-            'score': "%.1f" % score,
-            'key': key,
-            'form_type': form_type
-        }
+            updateResult(img_id, path)
+    
+        answer = AnswerKey.objects.get(img_dir_id=img_id)
+        img = Image.objects.get(id=img_id)
+        key = json.loads(answer.answer_key)
 
-    return render(request, 'main/pages/main-content.html', {
-        'result': result
-    })
+        if form_type == 'key':
+            result = {
+                'img': preview.result_image,
+                'key': key,
+                'form_type': form_type
+            }
+        elif form_type == 'answer':
+            result = {
+                'img': preview.result_image,
+                'correct': correct,
+                'wrong': wrong,
+                'score': "%.1f" % score,
+                'key': key,
+                'form_type': form_type
+            }
+            
+        return render(request, 'main/pages/main-content.html', {
+            'result': result
+        })

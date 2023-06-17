@@ -1,22 +1,53 @@
 from django.db import models
-from preview.models import Preview
 
 # Create your models here.
-class Grader(models.Model):
-    # user_id = models.CharField(
-    #     max_length=100,
-    #     foreign_key=True,
+class Image(models.Model):
+    # user = models.ForeignKey(
+    #     User, 
     #     on_delete=models.CASCADE,
-    #     on_update=models.CASCADE,
     #     )
-    preview = models.ForeignKey(
-        Preview, 
+    form_type = models.CharField(max_length=100)
+    form_image = models.ImageField(upload_to='images/')
+    warped_image = models.ImageField(upload_to='images/', null=True)
+    result_image = models.ImageField(upload_to='images/', null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+class ImgFeatures(models.Model):
+    image = models.ForeignKey(
+        Image, 
         on_delete=models.CASCADE,
         )
-    answer_key = models.JSONField(blank=True, null=True)
     height = models.IntegerField()
     choices = models.IntegerField()
     max_q = models.IntegerField()
     max_mark = models.IntegerField()
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+class AnswerKey(models.Model):
+    image = models.ForeignKey(
+        Image,
+        on_delete=models.CASCADE,
+        )
+    answer_key = models.JSONField(blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+class GradeDetail(models.Model):
+    name = models.CharField(max_length=255)
+    score = models.IntegerField()
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+class GradeSummary(models.Model):
+    answer_key = models.ForeignKey(
+        AnswerKey, 
+        on_delete=models.CASCADE,
+        )
+    grade_detail = models.ForeignKey(
+        GradeDetail, 
+        on_delete=models.CASCADE,
+        )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

@@ -1512,14 +1512,15 @@ section {
 /*--------------------------------------------------------------
 # Contact
 --------------------------------------------------------------*/
-.contact {
+.submitForm {
   background: url("../img/book-bg.jpg") center no-repeat;
   position: relative;
+  z-index: 100;
   background-color: rgba(255,255,255,0.9);
   background-blend-mode: lighten;
 }
 
-.contact:before {
+.submitForm:before {
   content: "";
   background: rgba(255, 255, 255, 0.7);
   position: absolute;
@@ -1529,15 +1530,15 @@ section {
   right: 0;
 }
 
-.contact .container {
+.submitForm .container {
   position: relative;
 }
 
-.contact .info {
+.submitForm .info {
   width: 100%;
 }
 
-.contact .info i {
+.submitForm .info i {
   font-size: 20px;
   background: #0880e8;
   color: #fff;
@@ -1551,7 +1552,7 @@ section {
   transition: all 0.3s ease-in-out;
 }
 
-.contact .info h4 {
+.submitForm .info h4 {
   padding: 0 0 0 60px;
   font-size: 20px;
   font-weight: 700;
@@ -1559,24 +1560,24 @@ section {
   color: #043c6d;
 }
 
-.contact .info p {
+.submitForm .info p {
   padding: 0 0 0 60px;
   margin-bottom: 0;
   font-size: 14px;
   color: #444444;
 }
 
-.contact .info .email,
-.contact .info .phone {
+.submitForm .info .email,
+.submitForm .info .phone {
   margin-top: 40px;
 }
 
-.contact .php-email-form {
+.submitForm .php-email-form {
   width: 100%;
   background: #fff;
 }
 
-.contact .php-email-form .error-message {
+.submitForm .php-email-form .error-message {
   display: none;
   color: #fff;
   background: #ed3c0d;
@@ -1585,11 +1586,11 @@ section {
   font-weight: 600;
 }
 
-.contact .php-email-form .error-message br+br {
+.submitForm .php-email-form .error-message br+br {
   margin-top: 25px;
 }
 
-.contact .php-email-form .sent-message {
+.submitForm .php-email-form .sent-message {
   display: none;
   color: #fff;
   background: #18d26e;
@@ -1598,14 +1599,14 @@ section {
   font-weight: 600;
 }
 
-.contact .php-email-form .loading {
+.submitForm .php-email-form .loading {
   display: none;
   background: #fff;
   text-align: center;
   padding: 15px;
 }
 
-.contact .php-email-form .loading:before {
+.submitForm .php-email-form .loading:before {
   content: "";
   display: inline-block;
   border-radius: 50%;
@@ -1617,18 +1618,18 @@ section {
   animation: animate-loading 1s linear infinite;
 }
 
-.contact .php-email-form input,
-.contact .php-email-form textarea {
+.submitForm .php-email-form input,
+.submitForm .php-email-form textarea {
   border-radius: 4px;
   box-shadow: none;
   font-size: 14px;
 }
 
-.contact .php-email-form textarea {
+.submitForm .php-email-form textarea {
   padding: 10px 12px;
 }
 
-.contact .submit-form button[type=submit] {
+.submitForm .submit-form button[type=submit] {
   border: 0;
   padding: 10px 32px;
   color: #0880e8;
@@ -1638,7 +1639,7 @@ section {
   background: #fff;
 }
 
-.contact .submit-form button[type=submit]:hover {
+.submitForm .submit-form button[type=submit]:hover {
   background: #0880e8;
   color: #fff;
 }

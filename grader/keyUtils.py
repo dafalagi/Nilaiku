@@ -10,7 +10,7 @@ class keyUtils:
 
         utils = Utils()
         features = utils.imgFeatures(preview_id)
-        preprocessed = utils.preprocessing(path)
+        preprocessed = utils.roiPreprocessing(path)
 
         result, key = self.keyProcess(path, features, preprocessed)
 
