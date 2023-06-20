@@ -20,12 +20,13 @@ from django.conf.urls.static import static
 from . import views
 
 urlpatterns = [
+    path('', views.index),
     path("__reload__/", include("django_browser_reload.urls")),
-    path('admin/', include('dashboard.urls')),
+    # path('admin/', include('dashboard.urls')),
+    path('admin/', admin.site.urls),
+    path('accounts/', include('allauth.urls')),
     path('user/', include('user.urls')),
     path('grader/', include('grader.urls')),
-    path('preview/', include('preview.urls')),
-    path('', views.index),
     path('home/', views.home, name='home'),
     path('blog/', views.blog, name='blog'),
 ]

@@ -10,7 +10,7 @@
 
         <div class="col-lg mt-5 mt-lg-0" data-aos="fade-left" data-aos-delay="100">
 
-          <form action="{% url 'upload' %}" method="post" role="form" class="submit-form" enctype="multipart/form-data">
+          <form action="{% url 'grade' %}" method="post" role="form" class="submit-form" enctype="multipart/form-data">
             {% csrf_token %}
             <div class="form-group">
               <p>Tipe LJK</p>

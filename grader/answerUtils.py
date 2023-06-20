@@ -1,11 +1,11 @@
-from .models import imgDir
+from .models import Image
 from .utils import Utils
 import numpy as np
 import cv2, json, os
 
 class answerUtils:
     def answerType(self, img_id):
-        img = imgDir.objects.get(id=img_id)
+        img = Image.objects.get(id=img_id)
         path = 'media/'+img.warped_image.name
 
         utils = Utils()

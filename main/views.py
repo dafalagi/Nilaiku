@@ -4,6 +4,9 @@ def index(request):
     return redirect('login')
 
 def home(request):
+    if request.user.is_authenticated == False:
+        return redirect('login')
+    
     return render(request, 'main/pages/home.html')
 
 def blog(request):

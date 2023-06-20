@@ -1,11 +1,12 @@
 from django.db import models
+from user.models import User
 
 # Create your models here.
 class Image(models.Model):
-    # user = models.ForeignKey(
-    #     User, 
-    #     on_delete=models.CASCADE,
-    #     )
+    user = models.ForeignKey(
+        User, 
+        on_delete=models.CASCADE,
+        )
     form_type = models.CharField(max_length=100)
     form_image = models.ImageField(upload_to='images/')
     warped_image = models.ImageField(upload_to='images/', null=True)
@@ -36,7 +37,7 @@ class AnswerKey(models.Model):
 
 class GradeDetail(models.Model):
     name = models.CharField(max_length=255)
-    score = models.IntegerField()
+    classes = models.CharField(max_length=255)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -49,5 +50,6 @@ class GradeSummary(models.Model):
         GradeDetail, 
         on_delete=models.CASCADE,
         )
+    score = models.IntegerField()
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

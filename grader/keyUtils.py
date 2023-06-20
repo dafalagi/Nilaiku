@@ -1,20 +1,20 @@
-from .models import Preview
+from .models import Image
 from .utils import Utils
 import numpy as np
 import cv2, json, os
 
 class keyUtils:
-    def keyType(self, preview_id):
-        preview = Preview.objects.get(id=preview_id)
-        path = 'media/'+preview.warped_image.name
+    def keyType(self, img_id):
+        image = Image.objects.get(id=img_id)
+        path = 'media/'+image.warped_image.name
 
         utils = Utils()
-        features = utils.imgFeatures(preview_id)
+        features = utils.imgFeatures(image_id)
         preprocessed = utils.roiPreprocessing(path)
 
         result, key = self.keyProcess(path, features, preprocessed)
 
-        basename = os.path.basename(preview.form_image.name)
+        basename = os.path.basename(image.form_image.name)
         cv2.imwrite('media/images/result'+basename, result)
         path = 'images/result'+basename
 

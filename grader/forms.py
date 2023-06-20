@@ -14,4 +14,4 @@ class KeyForm(forms.ModelForm):
 class AnswerForm(forms.ModelForm):
     class Meta:
         model = GradeDetail
-        fields = ["name", "score"]
+        fields = ["name", "classes"]

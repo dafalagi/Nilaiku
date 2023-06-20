@@ -3,41 +3,20 @@ from .keyUtils import keyUtils
 from .answerUtils import answerUtils
 from .modelUtils import modelUtils
 from .utils import Utils 
-from .forms import UploadForm, KeyForm
 from .models import Image, AnswerKey, GradeDetail
 import grader.models as models
 import json
 
 # Create your views here.
-def upload(request):
-    upload = UploadForm(request.POST, request.FILES)
+def grade(request):
+    upload = modelUtils.upload(request)
 
-    if upload.is_valid():
-        upload = upload.save()
-
-        if (upload.form_type == 'key'):    
-            key = KeyForm(request.POST)
-
-            if key.is_valid():
-                key = key.save(commit=False)
-                key.image = upload
-                key.save()
-        elif (upload.form_type == 'answer'):
-            answer = AnswerForm(request.POST)
-
-            if answer.is_valid():
-                answer.save()
-
-        utils = Utils()
-        if utils.isTiny(upload.form_image):
-            return redirect(reverse('grading', kwargs={'img_id': upload.id}))
-
-def grading(request, img_id):
-    img = Images.objects.get(id=img_id)
+    img = Images.objects.get(id=upload['img_id'])
     path = img.form_image
     form_type = img.form_type
 
-    utils = Utils()    
+    utils = Utils()
+    modelUtils = modelUtils()
     warped = utils.warping(path)
 
     if updateWarped(img_id, warped):
@@ -45,13 +24,13 @@ def grading(request, img_id):
             ku = keyUtils()
             path, key = ku.keyType(img_id)
 
-            updateResult(img_id, path)
-            updateKey(img_id, key)
+            modelUtils.updateResult(img_id, path)
+            modelUtils.updateKey(img_id, key)
         elif form_type == 'answer':
             au = answerUtils()
             path, correct, wrong, score = au.answerType(img_id)
 
-            updateResult(img_id, path)
+            modelUtils.updateResult(img_id, path)
     
         answer = AnswerKey.objects.get(img_dir_id=img_id)
         img = Image.objects.get(id=img_id)

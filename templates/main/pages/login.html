@@ -1,5 +1,6 @@
 {% extends 'main/partials/base.html' %}
   
+{% load socialaccount %}
 {% load static %}
 
 {% block main_content %}
@@ -15,7 +16,7 @@
           <p class="animate__animated animate__fadeInUp">
             Silahkan masuk menggunakan akun Google Anda untuk melanjutkan.
           </p>
-          <a href="{% url 'home' %}" class="btn-get-started animate__animated animate__fadeInUp scrollto">Masuk menggunakan akun Google</a>
+          <a href="{% provider_login_url 'google' %}" class="btn-get-started animate__animated animate__fadeInUp scrollto">Masuk menggunakan akun Google</a>
         </div>
       </div>
 

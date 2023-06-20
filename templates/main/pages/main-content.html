@@ -6,15 +6,8 @@
 
   <main id="main">
 
-    {% if request.get_full_path == url %}
-      {% include 'main/components/preview-content.html' %}
-
-      {% include 'main/components/preview-nav.html' %}
-    {% elif request.get_full_path == "/grader/" %}
       {% include 'main/components/grader-content.html' %}
-
       {% include 'main/components/grader-nav.html' %}
-    {% endif %}
 
   </main><!-- End #main -->
 
