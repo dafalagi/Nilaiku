@@ -64,6 +64,16 @@
                 <input type="number" class="form-control mt-2" name="max_mark" id="max_mark" required>
               </div>
             </div>
+            <div id="grade_details" style="display: none;">
+              <div class="form-group mt-3">
+                <label for="name">Nama</label>
+                <input type="text" class="form-control mt-2" name="name" id="name" required>
+              </div>
+              <div class="form-group mt-3">
+                <label for="classes">Kelas</label>
+                <input type="text" class="form-control mt-2" name="classes" id="classes" required>
+              </div>
+            </div>
             <div class="form-group mt-3">
               <label for="form_image" class="form-label">Unggah Foto LJK</label>
               <input class="form-control" type="file" id="form_image" name="form_image" accept="image/*" required>
@@ -85,11 +95,23 @@
     var form_type = document.querySelector('input[name="form_type"]:checked').value;
     var features = document.getElementById("features");
     var max_mark = document.getElementById("max_mark");
+    var grade_details = document.getElementById("grade_details");
+    var name = document.getElementById("name");
+    var classes = document.getElementById("classes");
+
     if (form_type == "key") {
       features.style.display = "block";
     } else {
       features.style.display = "none";
       max_mark.required = false;
+    }
+
+    if (form_type == "answer") {
+      grade_details.style.display = "block";
+    } else {
+      grade_details.style.display = "none";
+      name.required = false;
+      classes.required = false;
     }
   }
 </script>

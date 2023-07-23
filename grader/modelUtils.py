@@ -38,7 +38,10 @@ class modelUtils:
 
         if upload.is_valid():
             upload = upload.save(commit=False)
-            upload.user = self.storeUser(request.user.email)
+            
+            if not User.objects.filter(email=user.email).exists():
+                upload.user = self.storeUser(user.email)
+
             upload.save()
 
             if (upload.form_type == 'key'):    

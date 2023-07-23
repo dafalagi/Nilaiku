@@ -78,12 +78,9 @@ class Utils:
     def isTiny(self, file):
         tinify.key = config('TINIFY_KEY')
 
-        img = cv2.imread('media/'+file.name)
-        dimensions = img.shape
-        height = dimensions[0]
-        width = dimensions[1]
+        size = os.path.getsize('media/'+file.name)
 
-        if width > 2000 or height > 2000:
+        if size > 5000000:
             source = tinify.from_file('media/'+file.name)
             source.to_file('media/'+file.name)
 
