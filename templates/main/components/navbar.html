@@ -5,12 +5,14 @@
         active
       {% endif %}
         " href="{% url 'home' %}">Halaman Utama</a></li>
-    {% if request.get_full_path == '/home/' %}
+    {% if request.get_full_path == '/user/login/' %}
+    {% elif request.get_full_path == '/user/logout/' %}
+    {% else %}
     <li><a class="nav-link scrollto
-      {% if request.get_full_path == '/summary/' %}
+      {% if request.get_full_path == '/grader/summary/' %}
         active
       {% endif %}
-      " href="#">Rekap Nilai</a></li>
+      " href="{% url 'summary' %}">Rekap Nilai</a></li>
     {% endif %}
     <li><a class="nav-link scrollto" href="{% url 'logout' %}">Keluar</a></li>
   </ul>

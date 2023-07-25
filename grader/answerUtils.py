@@ -1,18 +1,21 @@
-from .models import Image
+from .models import Image, AnswerKey
 from .utils import Utils
+from user.models import User
 import numpy as np
 import cv2, json, os
 
-class answerUtils:
-    def answerType(self, img_id):
+class AnswerUtils:
+    def answerType(self, img_id, email):
         img = Image.objects.get(id=img_id)
         path = 'media/'+img.warped_image.name
 
+        keyImg, key = self.answerKey(email)
+
         utils = Utils()
-        features = utils.imgFeatures(9)
+        features = utils.imgFeatures(keyImg.id)
         preprocessed = utils.roiPreprocessing(path)
 
-        result, correct, wrong = self.answerProcess(path, features, preprocessed)
+        result, correct, wrong = self.answerProcess(path, features, preprocessed, key)
         score = self.scoring(correct, wrong, features['max_mark'])
 
         basename = os.path.basename(img.form_image.name)
@@ -21,8 +24,16 @@ class answerUtils:
 
         return path, correct, wrong, score
 
-    def answerProcess(self, path, features, preprocessed):
-        ANSWER_KEY = {'0': 2, '10': 4, '20': 0, '30': 4, '1': 0, '11': 2, '21': 2, '31': 0, '2': 1, '12': 1, '22': 3, '32': 3, '3': 2, '13': 3, '23': 2, '33': 2, '4': 0, '14': 4, '24': 3, '34': 0, '5': 4, '15': 2, '25': 4, '6': 4, '16': 4, '26': 0, '7': 2, '17': 3, '27': 0, '8': 1, '18': 1, '28': 3, '9': 2, '19': 2, '29': 4}
+    def answerKey(self, email):
+        user = User.objects.get(email=email)
+        keyImg = Image.objects.filter(user=user, form_type='key').order_by('-id')[0]
+
+        answer = AnswerKey.objects.get(image_id=keyImg.id)
+        key = json.loads(answer.answer_key)
+
+        return keyImg, key
+
+    def answerProcess(self, path, features, preprocessed, key):
         img = cv2.imread(path)
         correct = 0
         wrong = 0
@@ -56,7 +67,7 @@ class answerUtils:
             if old_question_no >= features['max_mark']:
                 pass
             else:
-                k = ANSWER_KEY[str(old_question_no)]
+                k = key[str(old_question_no)]
 
                 if k == bubbled[2]:
                     color = (0, 255, 0)

@@ -3,13 +3,13 @@ from .utils import Utils
 import numpy as np
 import cv2, json, os
 
-class keyUtils:
+class KeyUtils:
     def keyType(self, img_id):
         image = Image.objects.get(id=img_id)
         path = 'media/'+image.warped_image.name
 
         utils = Utils()
-        features = utils.imgFeatures(image_id)
+        features = utils.imgFeatures(image.id)
         preprocessed = utils.roiPreprocessing(path)
 
         result, key = self.keyProcess(path, features, preprocessed)

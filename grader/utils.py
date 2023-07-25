@@ -1,6 +1,8 @@
-from .models import ImgFeatures
+from django.conf import settings
+from .models import ImgFeatures, Image
 from imutils.perspective import four_point_transform
 from decouple import config
+import datetime
 import numpy as np
 import tinify, cv2, os
 
@@ -124,3 +126,23 @@ class Utils:
         approx = cv2.approxPolyDP(cont, 0.02*peri, True)
 
         return approx
+
+    def deleteMedia(self, user_id):
+        images = Image.objects.filter(user_id=user_id)
+        media_dir = settings.MEDIA_ROOT
+
+        for img in images:
+            if img.form_image:
+                path = os.path.join(media_dir, str(img.form_image))
+                if os.path.exists(path):
+                    os.remove()
+            if img.result_image:
+                path = os.path.join(media_dir, str(img.result_image))
+                if os.path.exists(path):
+                    os.remove()
+            if img.warped_image:
+                path = os.path.join(media_dir, str(img.warped_image))
+                if os.path.exists(path):
+                    os.remove()
+
+        return True
