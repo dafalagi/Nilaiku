@@ -28,7 +28,7 @@ class AnswerUtils:
         user = User.objects.get(email=email)
         keyImg = Image.objects.filter(user=user, form_type='key').order_by('-id')[0]
 
-        answer = AnswerKey.objects.get(image_id=keyImg.id)
+        answer = AnswerKey.objects.get(image_id=keyImg)
         key = json.loads(answer.answer_key)
 
         return keyImg, key

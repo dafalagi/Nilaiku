@@ -1,10 +1,9 @@
 from django.conf import settings
-from .models import ImgFeatures, Image
+from .models import ImgFeatures, Image, GradeDetail
 from imutils.perspective import four_point_transform
 from decouple import config
-import datetime
 import numpy as np
-import tinify, cv2, os
+import tinify, cv2, os, datetime, xlsxwriter, glob
 
 class Utils:
     def imgFeatures(self, img_id):
@@ -129,20 +128,56 @@ class Utils:
 
     def deleteMedia(self, user_id):
         images = Image.objects.filter(user_id=user_id)
+
+        self.deleteImage(images)
+        self.deleteExcel(images[0].user.email)
+
+        return True
+
+    def deleteImage(self, images):
         media_dir = settings.MEDIA_ROOT
 
         for img in images:
             if img.form_image:
                 path = os.path.join(media_dir, str(img.form_image))
                 if os.path.exists(path):
-                    os.remove()
+                    os.remove(path)
             if img.result_image:
                 path = os.path.join(media_dir, str(img.result_image))
                 if os.path.exists(path):
-                    os.remove()
+                    os.remove(path)
             if img.warped_image:
                 path = os.path.join(media_dir, str(img.warped_image))
                 if os.path.exists(path):
-                    os.remove()
+                    os.remove(path)
+
+        return True
+
+    def deleteExcel(self, email):
+        os.chdir('media/summaries')
+
+        for file in glob.glob(email+'*.xlsx'):
+            if os.path.exists(file):
+                os.remove(file)
+
+        return True
+
+    def writeExcel(self, summaries, email):
+        path = 'media/summaries/'+email+'_'+summaries[0].created_at.strftime("%d%m%Y")+'.xlsx'
+        workbook = xlsxwriter.Workbook(path)
+        worksheet = workbook.add_worksheet()
+
+        row = 0
+        col = 0
+
+        for summary in summaries:
+            gradeDetail = GradeDetail.objects.get(id=summary.grade_detail_id)
+
+            worksheet.write(row, col, gradeDetail.name)
+            worksheet.write(row, col+1, gradeDetail.classes)
+            worksheet.write(row, col+2, summary.score)
+            row += 1
+
+        workbook.close()
 
         return True

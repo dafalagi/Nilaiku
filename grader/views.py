@@ -1,11 +1,14 @@
 from django.shortcuts import render, redirect, reverse
+from django.http import HttpResponse
+from wsgiref.util import FileWrapper
 from .keyUtils import KeyUtils
 from .answerUtils import AnswerUtils
 from .modelUtils import ModelUtils
 from .utils import Utils 
-from .models import Image, AnswerKey, GradeDetail
+from .models import Image, AnswerKey, GradeDetail, GradeSummary
+from user.models import User
 import grader.models as models
-import json
+import json, os
 
 # Create your views here.
 def grade(request):
@@ -31,7 +34,7 @@ def grade(request):
             path, correct, wrong, score = au.answerType(img.id, request.user.email)
 
             keyImg, key = au.answerKey(request.user.email)
-            answerKey = AnswerKey.objects.get(image_id=keyImg.id)
+            answerKey = AnswerKey.objects.get(image_id=keyImg)
 
             modelUtils.updateResult(img.id, path)
             modelUtils.storeSummary(score, answerKey.id, upload['grade_detail_id'])
@@ -59,4 +62,28 @@ def grade(request):
         })
 
 def gradeSummary(request):
-    return render(request, 'main/pages/summary.html')
+    if request.method == 'POST':
+        answerKey = AnswerKey.objects.get(image_id=request.POST['key_id'])
+        summaries = GradeSummary.objects.filter(answer_key_id=answerKey)
+
+        utils = Utils()
+        if utils.writeExcel(summaries, request.user.email):
+            path = 'media/summaries/'+request.user.email+'_'+summaries[0].created_at.strftime("%d%m%Y")+'.xlsx'
+            filename = request.user.email+'_'+summaries[0].created_at.strftime("%d%m%Y")+'.xlsx'
+
+            if os.path.exists(path):
+                content = open(path, 'r')
+                response = HttpResponse(content_type='application/vnd.ms-excel')
+                response['Content-Disposition'] = 'attachment; filename=%s' % filename
+
+                return response
+
+    if User.objects.filter(email=request.user.email).exists():
+        user = User.objects.get(email=request.user.email)
+        keys = Image.objects.filter(user=user, form_type='key')
+
+        return render(request, 'main/pages/summary.html', {
+            'keys': keys
+        })
+    else:
+        return render(request, 'main/pages/summary.html')

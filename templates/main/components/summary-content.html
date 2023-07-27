@@ -28,11 +28,21 @@
 
               <div class="entry-content">
                 <ul>
-                    <li>
-                        <a href="#">
-                            24/7/23
-                        </a>
-                    </li>
+                  
+                  {% if keys %}
+                    {% for key in keys %}
+                      <li class="m-1">
+                          <form action="{% url 'summary' %}" method="post">
+                            {% csrf_token %}
+                            <span>{{ key.created_at|date:"d-m-Y" }}</span>
+                            <input type="hidden" name="key_id" value="{{ key.id }}">
+                            <input type="submit" class="btn btn-primary btn-sm" value="Download">
+                          </form>
+                      </li>
+                    {% endfor %}
+                  {% else %}
+                  {% endif %}
+
                 </ul>
               </div>
 
