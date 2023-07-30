@@ -1,9 +1,10 @@
 from django.conf import settings
+from django.http import HttpResponse
 from .models import ImgFeatures, Image, GradeDetail
 from imutils.perspective import four_point_transform
 from decouple import config
 import numpy as np
-import tinify, cv2, os, datetime, xlsxwriter, glob
+import tinify, cv2, os, datetime, xlsxwriter, glob, io
 
 class Utils:
     def imgFeatures(self, img_id):
@@ -163,8 +164,9 @@ class Utils:
         return True
 
     def writeExcel(self, summaries, email):
-        path = 'media/summaries/'+email+'_'+summaries[0].created_at.strftime("%d%m%Y")+'.xlsx'
-        workbook = xlsxwriter.Workbook(path)
+        filename = email+'_'+summaries[0].created_at.strftime("%d%m%Y")+'.xlsx'
+        output = io.BytesIO()
+        workbook = xlsxwriter.Workbook(output, {'in_memory': True})
         worksheet = workbook.add_worksheet()
 
         row = 0
@@ -179,5 +181,11 @@ class Utils:
             row += 1
 
         workbook.close()
+        output.seek(0)
 
-        return True
+        response = HttpResponse(output.read(), content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+        response['Content-Disposition'] = "attachment; filename=%s" % filename
+
+        output.close()
+
+        return response

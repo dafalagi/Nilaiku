@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect, reverse
+from django.db.models import Count
 from django.http import HttpResponse
-from wsgiref.util import FileWrapper
 from .keyUtils import KeyUtils
 from .answerUtils import AnswerUtils
 from .modelUtils import ModelUtils
@@ -8,7 +8,7 @@ from .utils import Utils
 from .models import Image, AnswerKey, GradeDetail, GradeSummary
 from user.models import User
 import grader.models as models
-import json, os
+import json, os, mimetypes
 
 # Create your views here.
 def grade(request):
@@ -63,24 +63,31 @@ def grade(request):
 
 def gradeSummary(request):
     if request.method == 'POST':
-        answerKey = AnswerKey.objects.get(image_id=request.POST['key_id'])
+        answerKey = AnswerKey.objects.get(id=request.POST['key_id'])
         summaries = GradeSummary.objects.filter(answer_key_id=answerKey)
 
         utils = Utils()
         if utils.writeExcel(summaries, request.user.email):
-            path = 'media/summaries/'+request.user.email+'_'+summaries[0].created_at.strftime("%d%m%Y")+'.xlsx'
-            filename = request.user.email+'_'+summaries[0].created_at.strftime("%d%m%Y")+'.xlsx'
+            response = utils.writeExcel(summaries, request.user.email)
 
-            if os.path.exists(path):
-                content = open(path, 'r')
-                response = HttpResponse(content_type='application/vnd.ms-excel')
-                response['Content-Disposition'] = 'attachment; filename=%s' % filename
-
-                return response
+            return response
 
     if User.objects.filter(email=request.user.email).exists():
         user = User.objects.get(email=request.user.email)
-        keys = Image.objects.filter(user=user, form_type='key')
+        keyImgs = Image.objects.filter(user=user, form_type='key')
+
+        for keyImg in keyImgs:
+            if AnswerKey.objects.filter(image_id=keyImg).exists():
+                key = AnswerKey.objects.get(image_id=keyImg)
+                summaries = (GradeSummary.objects
+                    .values('answer_key_id')
+                    .annotate(dcount=Count('answer_key_id'))
+                    .order_by()
+                )
+
+        keys = []
+        for summary in summaries:
+            keys.append(AnswerKey.objects.get(id=summary['answer_key_id']))
 
         return render(request, 'main/pages/summary.html', {
             'keys': keys
