@@ -6,7 +6,8 @@ name = "pypi"
 [packages]
 django = "*"
 opencv-python = "*"
-python-decouple = "3.8"
+python-decouple = "*"
+dj-database-url = "*"
 
 [dev-packages]
 
