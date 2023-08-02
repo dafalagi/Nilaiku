@@ -12,6 +12,7 @@ django-allauth = "*"
 django-seed = "*"
 djecrety = "*"
 django-browser-reload = "*"
+gunicorn = "*"
 
 [dev-packages]
 
