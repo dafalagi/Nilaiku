@@ -8,6 +8,10 @@ django = "*"
 opencv-python = "*"
 python-decouple = "*"
 dj-database-url = "*"
+django-allauth = "*"
+django-seed = "*"
+djecrety = "*"
+django-browser-reload = "*"
 
 [dev-packages]
 
