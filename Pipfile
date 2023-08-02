@@ -6,6 +6,7 @@ name = "pypi"
 [packages]
 django = "*"
 opencv-python = "*"
+python-decouple = "3.8"
 
 [dev-packages]
 
