@@ -15,6 +15,10 @@ django-browser-reload = "*"
 gunicorn = "*"
 psycopg2 = "*"
 imutils = "*"
+opencv-python-headless = "*"
+scipy = "*"
+xlsxwriter = "*"
+tinify = "*"
 
 [dev-packages]
 
