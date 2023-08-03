@@ -13,6 +13,7 @@ django-seed = "*"
 djecrety = "*"
 django-browser-reload = "*"
 gunicorn = "*"
+psycopg2 = "*"
 
 [dev-packages]
 
