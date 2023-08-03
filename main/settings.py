@@ -89,19 +89,22 @@ WSGI_APPLICATION = 'main.wsgi.application'
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 
 if DEBUG is True:
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.mysql',
-            'NAME': config('DB_NAME', default='nilaikudb'),
-            'USER': config('DB_USER', default='root'),
-            'PASSWORD': config('DB_PASSWORD'),
-            'HOST': config('DB_HOST', default='localhost'),
-            'PORT': config('DB_PORT', default='3306')
-        }
-    }
     # DATABASES = {
-    #     "default": dj_database_url.parse(os.environ.get("DATABASE_URL")),
+    #     'default': {
+    #         'ENGINE': 'django.db.backends.mysql',
+    #         'NAME': config('DB_NAME', default='nilaikudb'),
+    #         'USER': config('DB_USER', default='root'),
+    #         'PASSWORD': config('DB_PASSWORD', default=''),
+    #         'HOST': config('DB_HOST', default='localhost'),
+    #         'PORT': config('DB_PORT', default='3306')
+    #     }
     # }
+    if len(sys.argv) > 0 and sys.argv[1] != 'collectstatic':
+        if os.getenv("DATABASE_URL", None) is None:
+            raise Exception("DATABASE_URL environment variable not defined")
+        DATABASES = {
+            "default": dj_database_url.parse(os.environ.get("DATABASE_URL")),
+        }
 elif len(sys.argv) > 0 and sys.argv[1] != 'collectstatic':
     if os.getenv("DATABASE_URL", None) is None:
         raise Exception("DATABASE_URL environment variable not defined")
