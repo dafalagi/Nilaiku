@@ -61,7 +61,6 @@ MIDDLEWARE = [
 ]
 
 if DEBUG is True:
-    # Tailwind hot reloader / browser reload for development environment
     MIDDLEWARE.append("django_browser_reload.middleware.BrowserReloadMiddleware")
     INSTALLED_APPS.append("django_browser_reload", "djecrety", "django_seed")
 
