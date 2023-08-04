@@ -165,7 +165,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 MEDIA_ROOT =  os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'
 
-SITE_ID = 3
+SITE_ID = config('SITE_ID', default=1)
 SOCIALACCOUNT_LOGIN_ON_GET=True
 
 LOGIN_REDIRECT_URL = '/home'

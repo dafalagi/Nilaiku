@@ -1,20 +1,19 @@
 <nav id="navbar" class="navbar">
   <ul>
+    {% if request.get_full_path == '/user/login/' %}
+    {% else %}
     <li><a class="nav-link scrollto 
       {% if request.get_full_path == '/home/' %}
         active
       {% endif %}
         " href="{% url 'home' %}">Halaman Utama</a></li>
-    {% if request.get_full_path == '/user/login/' %}
-    {% elif request.get_full_path == '/user/logout/' %}
-    {% else %}
     <li><a class="nav-link scrollto
       {% if request.get_full_path == '/grader/summary/' %}
         active
       {% endif %}
       " href="{% url 'summary' %}">Rekap Nilai</a></li>
+      <li><a class="nav-link scrollto" href="{% url 'logout' %}">Keluar</a></li>
     {% endif %}
-    <li><a class="nav-link scrollto" href="{% url 'logout' %}">Keluar</a></li>
   </ul>
   <i class="bi bi-list mobile-nav-toggle"></i>
 </nav><!-- .navbar -->
