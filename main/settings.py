@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'allauth.account',
     'allauth.socialaccount',
     'allauth.socialaccount.providers.google',
+    "django_browser_reload",
     'dashboard',
     'user',
     'grader',
@@ -58,11 +59,12 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    "django_browser_reload.middleware.BrowserReloadMiddleware",
 ]
 
 if DEBUG is True:
-    MIDDLEWARE.append("django_browser_reload.middleware.BrowserReloadMiddleware")
-    INSTALLED_APPS.append("django_browser_reload", "djecrety", "django_seed")
+    INSTALLED_APPS.append("djecrety")
+    INSTALLED_APPS.append("django_seed")
 
 ROOT_URLCONF = 'main.urls'
 

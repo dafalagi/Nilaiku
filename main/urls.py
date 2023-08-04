@@ -21,6 +21,7 @@ from . import views
 
 urlpatterns = [
     path('', views.index),
+    path("__reload__/", include("django_browser_reload.urls")),
     # path('admin/', include('dashboard.urls')),
     path('admin/', admin.site.urls),
     path('accounts/', include('allauth.urls')),
@@ -29,9 +30,6 @@ urlpatterns = [
     path('home/', views.home, name='home'),
     path('blog/', views.blog, name='blog'),
 ]
-
-if settings.DEBUG is True:
-    urlpatterns.append(path("__reload__/", include("django_browser_reload.urls")))
 
 if settings.DEBUG:
         urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
