@@ -20,6 +20,8 @@ scipy = "*"
 xlsxwriter = "*"
 tinify = "*"
 pillow = "*"
+django-storages = "*"
+boto3 = "*"
 
 [dev-packages]
 

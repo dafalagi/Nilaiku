@@ -131,7 +131,6 @@ class Utils:
         images = Image.objects.filter(user_id=user_id)
 
         self.deleteImage(images)
-        self.deleteExcel(images[0].user.email)
 
         return True
 
@@ -151,15 +150,6 @@ class Utils:
                 path = os.path.join(media_dir, str(img.warped_image))
                 if os.path.exists(path):
                     os.remove(path)
-
-        return True
-
-    def deleteExcel(self, email):
-        os.chdir('media/summaries')
-
-        for file in glob.glob(email+'*.xlsx'):
-            if os.path.exists(file):
-                os.remove(file)
 
         return True
 
