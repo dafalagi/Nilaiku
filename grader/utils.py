@@ -1,10 +1,12 @@
 from django.conf import settings
 from django.http import HttpResponse
+from django.core.files.base import ContentFile
 from .models import ImgFeatures, Image, GradeDetail
+from .forms import KeyForm, AnswerForm
 from imutils.perspective import four_point_transform
 from decouple import config
 import numpy as np
-import tinify, cv2, os, datetime, xlsxwriter, glob, io
+import tinify, cv2, os, xlsxwriter, io, boto3
 
 class Utils:
     def imgFeatures(self, img_id):
@@ -80,11 +82,11 @@ class Utils:
     def isTiny(self, file):
         tinify.key = config('TINIFY_KEY')
 
-        size = os.path.getsize('media/'+file.name)
+        size = os.path.getsize('media/'+file)
 
         if size > 5000000:
-            source = tinify.from_file('media/'+file.name)
-            source.to_file('media/'+file.name)
+            source = tinify.from_file('media/'+file)
+            source.to_file('media/'+file)
 
         return True
 
@@ -153,6 +155,59 @@ class Utils:
 
         return True
 
+    def storeImage(self, request):
+        if settings.USE_SPACES == True:
+            filename = request.FILES['form_image'].name
+            base_path = os.path.join(settings.BASE_DIR, 'media/images/')
+
+            if os.path.exists(base_path) == False:
+                os.makedirs(base_path)
+
+            path = os.path.join(base_path, filename)
+            fout = open(path, 'wb+')
+
+            content = ContentFile(request.FILES['form_image'].read())
+
+            for chunk in content.chunks():
+                fout.write(chunk)
+            fout.close()
+
+            imgPath = 'images/'+filename
+        else:
+            imgPath = upload.form_image.name
+
+        return imgPath
+
+    def storeForm(self, request, upload):
+        if (upload.form_type == 'key'):    
+                key = KeyForm(request.POST)
+
+                if key.is_valid():
+                    key = key.save(commit=False)
+                    key.image = upload
+                    key.save()
+
+                    result = {
+                        'img_id': upload.id
+                    }
+        elif (upload.form_type == 'answer'):
+            answer = AnswerForm(request.POST)
+
+            if answer.is_valid():
+                if GradeDetail.objects.filter(name=answer.cleaned_data['name'], 
+                classes=answer.cleaned_data['classes']).exists():
+                    answer = GradeDetail.objects.get(name=answer.cleaned_data['name'], 
+                    classes=answer.cleaned_data['classes'])
+                else:
+                    answer = answer.save()
+
+                result = {
+                    'img_id': upload.id,
+                    'grade_detail_id': answer.id
+                }
+        
+        return result
+
     def writeExcel(self, summaries, email):
         filename = email+'_'+summaries[0].created_at.strftime("%d%m%Y")+'.xlsx'
         output = io.BytesIO()
@@ -179,3 +234,28 @@ class Utils:
         output.close()
 
         return response
+
+    def connectToDOSpaces(self):
+        session = boto3.session.Session()
+        client = session.client(
+            's3',
+            region_name='sgp1',
+            endpoint_url='https://sgp1.digitaloceanspaces.com',
+            aws_access_key_id=config('AWS_ACCESS_KEY_ID'),
+            aws_secret_access_key=config('AWS_SECRET_ACCESS_KEY')
+        )
+
+        return client
+
+    def uploadToDOSpaces(self, file):
+        client = self.connectToDOSpaces()
+
+        with open('media/'+file, 'rb') as file_contents:
+            client.put_object(
+                Bucket='nilaikuspaces',
+                Key='media/'+file,
+                ACL='public-read',
+                Body=file_contents
+            )
+
+        return True

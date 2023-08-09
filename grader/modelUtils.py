@@ -1,6 +1,6 @@
 from .models import AnswerKey, Image, GradeSummary, GradeDetail
 from .utils import Utils
-from .forms import UploadForm, KeyForm, AnswerForm
+from .forms import UploadForm
 from user.models import User
 
 class ModelUtils:
@@ -46,6 +46,9 @@ class ModelUtils:
         upload = UploadForm(request.POST, request.FILES)
 
         if upload.is_valid():
+            utils = Utils()
+            imgPath = utils.storeImage(request)
+            
             upload = upload.save(commit=False)
             
             if User.objects.filter(email=request.user.email).exists():
@@ -55,34 +58,8 @@ class ModelUtils:
 
             upload.save()
 
-            if (upload.form_type == 'key'):    
-                key = KeyForm(request.POST)
+            result = utils.storeForm(request, upload)
 
-                if key.is_valid():
-                    key = key.save(commit=False)
-                    key.image = upload
-                    key.save()
-
-                    result = {
-                        'img_id': upload.id
-                    }
-            elif (upload.form_type == 'answer'):
-                answer = AnswerForm(request.POST)
-
-                if answer.is_valid():
-                    if GradeDetail.objects.filter(name=answer.cleaned_data['name'], 
-                    classes=answer.cleaned_data['classes']).exists():
-                        answer = GradeDetail.objects.get(name=answer.cleaned_data['name'], 
-                        classes=answer.cleaned_data['classes'])
-                    else:
-                        answer = answer.save()
-
-                    result = {
-                        'img_id': upload.id,
-                        'grade_detail_id': answer.id
-                    }
-
-            utils = Utils()
-            if utils.isTiny(upload.form_image):
+            if utils.isTiny(imgPath):
 
                 return result

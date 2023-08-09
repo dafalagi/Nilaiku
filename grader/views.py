@@ -27,6 +27,7 @@ def grade(request):
             ku = KeyUtils()
             path, key = ku.keyType(img.id)
 
+            utils.uploadToDOSpaces(path)
             modelUtils.updateResult(img.id, path)
             modelUtils.storeKey(img.id, key)
         elif form_type == 'answer':
@@ -36,6 +37,7 @@ def grade(request):
             keyImg, key = au.answerKey(request.user.email)
             answerKey = AnswerKey.objects.get(image_id=keyImg)
 
+            utils.uploadToDOSpaces(path)
             modelUtils.updateResult(img.id, path)
             modelUtils.storeSummary(score, answerKey.id, upload['grade_detail_id'])
 

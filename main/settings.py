@@ -11,7 +11,7 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 """
 
 from pathlib import Path
-from decouple import config, Csv
+from decouple import config
 from django.core.management.utils import get_random_secret_key
 import os, dj_database_url, sys
 
@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'allauth.socialaccount',
     'allauth.socialaccount.providers.google',
     "django_browser_reload",
+    'storages',
     'user',
     'grader',
 ]
@@ -90,22 +91,23 @@ WSGI_APPLICATION = 'main.wsgi.application'
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 
 if DEBUG is True:
-    # DATABASES = {
-    #     'default': {
-    #         'ENGINE': 'django.db.backends.mysql',
-    #         'NAME': config('DB_NAME', default='nilaikudb'),
-    #         'USER': config('DB_USER', default='root'),
-    #         'PASSWORD': config('DB_PASSWORD', default=''),
-    #         'HOST': config('DB_HOST', default='localhost'),
-    #         'PORT': config('DB_PORT', default='3306')
-    #     }
-    # }
-    if len(sys.argv) > 0 and sys.argv[1] != 'collectstatic':
-        if os.getenv("DATABASE_URL", None) is None:
-            raise Exception("DATABASE_URL environment variable not defined")
-        DATABASES = {
-            "default": dj_database_url.parse(os.environ.get("DATABASE_URL")),
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.mysql',
+            'NAME': config('DB_NAME', default='nilaikudb'),
+            'USER': config('DB_USER', default='root'),
+            'PASSWORD': config('DB_PASSWORD', default=''),
+            'HOST': config('DB_HOST', default='localhost'),
+            'PORT': config('DB_PORT', default='3306')
         }
+    }
+    # TO BE REMOVED
+    # if len(sys.argv) > 0 and sys.argv[1] != 'collectstatic':
+    #     if os.getenv("DATABASE_URL", None) is None:
+    #         raise Exception("DATABASE_URL environment variable not defined")
+    #     DATABASES = {
+    #         "default": dj_database_url.parse(os.environ.get("DATABASE_URL")),
+    #     }
 elif len(sys.argv) > 0 and sys.argv[1] != 'collectstatic':
     if os.getenv("DATABASE_URL", None) is None:
         raise Exception("DATABASE_URL environment variable not defined")
@@ -146,6 +148,28 @@ USE_L10N = True
 
 USE_TZ = False
 
+# Digital Ocean Spaces
+
+USE_SPACES = config('USE_SPACES', default='False') == 'True'
+
+if USE_SPACES is True:
+    AWS_ACCESS_KEY_ID = config('AWS_ACCESS_KEY_ID', default='')
+    AWS_SECRET_ACCESS_KEY = config('AWS_SECRET_ACCESS_KEY', default='')
+    AWS_STORAGE_BUCKET_NAME = config('AWS_STORAGE_BUCKET_NAME', default='')
+    AWS_DEFAULT_ACL = 'public-read'
+    AWS_S3_ENDPOINT_URL = 'https://sgp1.digitaloceanspaces.com'
+    AWS_S3_OBJECT_PARAMETERS = {
+        'CacheControl': 'max-age=86400'
+    }
+
+    # Media files settings
+
+    PUBLIC_MEDIA_LOCATION = 'media'
+    MEDIA_URL = f'https://{AWS_S3_ENDPOINT_URL}/{PUBLIC_MEDIA_LOCATION}/'
+    DEFAULT_FILE_STORAGE = 'main.storage_utils.MediaStorage'
+else:
+    MEDIA_ROOT =  os.path.join(BASE_DIR, 'media')
+    MEDIA_URL = '/media/'
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
@@ -159,10 +183,9 @@ STATICFILES_DIRS = (os.path.join(BASE_DIR, 'static'),)
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-MEDIA_ROOT =  os.path.join(BASE_DIR, 'media')
-MEDIA_URL = '/media/'
+# Allauth settings
 
-SITE_ID = config('SITE_ID', default=1)
+SITE_ID = config('SITE_ID', default=1, cast=int)
 SOCIALACCOUNT_LOGIN_ON_GET=True
 
 LOGIN_REDIRECT_URL = '/home'
