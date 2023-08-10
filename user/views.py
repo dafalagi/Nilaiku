@@ -12,7 +12,7 @@ def logout(request):
         user = User.objects.get(email=request.user.email)
 
         utils = Utils()
-        if utils.deleteMedia(user.id):
+        if utils.deleteImage(user.id):
             auth_logout(request)
 
             return redirect('login')

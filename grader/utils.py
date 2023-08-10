@@ -69,15 +69,11 @@ class Utils:
 
         return questionCnts
 
-    def convert_ques_no(self, q, rows_cnt, cols_cnt, hori_to_vert=True):
-        if hori_to_vert:
-            row = q // cols_cnt
-            col = q % cols_cnt
-            return col * rows_cnt + row
-        col = q // rows_cnt
-        row = q % rows_cnt
+    def convert_ques_no(self, q, rows_cnt, cols_cnt):
+        row = q // cols_cnt
+        col = q % cols_cnt
         
-        return row * cols_cnt + col
+        return col * rows_cnt + row
 
     def isTiny(self, file):
         tinify.key = config('TINIFY_KEY')
@@ -129,14 +125,8 @@ class Utils:
 
         return approx
 
-    def deleteMedia(self, user_id):
+    def deleteImage(self, user_id):
         images = Image.objects.filter(user_id=user_id)
-
-        self.deleteImage(images)
-
-        return True
-
-    def deleteImage(self, images):
         media_dir = settings.MEDIA_ROOT
 
         for img in images:
