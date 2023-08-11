@@ -80,7 +80,7 @@ class Utils:
 
         size = os.path.getsize('media/'+file)
 
-        if size > 5000000:
+        if size > 4000000:
             source = tinify.from_file('media/'+file)
             source.to_file('media/'+file)
 

@@ -27,7 +27,6 @@ urlpatterns = [
     path('user/', include('user.urls')),
     path('grader/', include('grader.urls')),
     path('home/', views.home, name='home'),
-    path('blog/', views.blog, name='blog'),
 ]
 
 if settings.DEBUG:

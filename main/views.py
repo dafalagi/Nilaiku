@@ -8,6 +8,3 @@ def home(request):
         return redirect('login')
     
     return render(request, 'main/pages/home.html')
-
-def blog(request):
-    return render(request, 'main/pages/blog.html')
