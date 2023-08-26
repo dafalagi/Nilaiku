@@ -1,11 +1,20 @@
 <!-- ======= Contact Section ======= -->
 <section id="submitForm" class="submitForm">
-    <div class="container" data-aos="fade-up">
-
-      <div class="section-title">
-        <h2>Silahkan isi formulir berikut untuk mulai menilai</h2>
-      </div>
-
+  <div class="container" data-aos="fade-up">
+    <div class="section-title">
+      <h2>Silahkan isi formulir berikut untuk mulai menilai</h2>
+    </div>
+    
+    {% if messages %}
+      {% for message in messages %}
+        {% if message.tags %}
+          {% if message.level == 40 %}
+            {% include 'main/components/modal.html' %}
+          {% endif %}
+        {% endif %}
+      {% endfor %}
+    {% endif %}
+    
       <div class="row mt-1 d-flex justify-content-start" data-aos="fade-right" data-aos-delay="100">
 
         <div class="col-lg mt-5 mt-lg-0" data-aos="fade-left" data-aos-delay="100">
@@ -34,9 +43,9 @@
                 <label for="height">Tinggi LJK</label>
                 <div class="col-md-2 form-group mt-2">
                   <select class="form-select" aria-label="height" name="height" id="height">
-                    <option value="10">10</option>
-                    <option value="15">15</option>
-                    <option value="20">20</option>
+                    <option value="10">10 Nomor</option>
+                    <option value="15">15 Nomor</option>
+                    <option value="20">20 Nomor</option>
                   </select>
                 </div>
               </div>
@@ -44,8 +53,8 @@
                 <label for="choices">Jumlah Pilihan Jawaban</label>
                 <div class="col-md-2 form-group mt-2">
                   <select class="form-select" aria-label="choices" name="choices" id="choices">
-                    <option value="4">4</option>
-                    <option value="5">5</option>
+                    <option value="4">4 (ABCD)</option>
+                    <option value="5">5 (ABCDE)</option>
                   </select>
                 </div>
               </div>
@@ -53,9 +62,8 @@
                 <label for="max_q">Total Nomor</label>
                 <div class="col-md-2 form-group mt-2">
                   <select class="form-select" aria-label="max_q" name="max_q" id="max_q">
-                    <option value="40">40</option>
-                    <option value="50">50</option>
-                    <option value="60">60</option>
+                    <option value="40">40 Nomor</option>
+                    <option value="50">50 Nomor</option>
                   </select>
                 </div>
               </div>

@@ -1,4 +1,5 @@
 from .models import Image
+from django.shortcuts import render, redirect, reverse
 from .utils import Utils
 import numpy as np
 import cv2, json, os
@@ -13,6 +14,8 @@ class KeyUtils:
         preprocessed = utils.roiPreprocessing(path)
 
         result, key = self.keyProcess(path, features, preprocessed)
+        if type(result) == bool:
+            return False, False
 
         basename = os.path.basename(image.form_image.name)
         cv2.imwrite('media/images/result'+basename, result)
@@ -27,6 +30,11 @@ class KeyUtils:
 
         contours, hierarchy = cv2.findContours(preprocessed, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
         questions = utils.find_questions(contours, img)
+
+        totalBubbles = features['max_q'] * features['choices']
+        if len(questions) != totalBubbles:
+            return False, False
+
         questionCnts = utils.find_ques_cnts(questions, features['width'])
 
         for (q, i) in enumerate(np.arange(0, len(questionCnts), features['choices'])):

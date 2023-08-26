@@ -1,4 +1,5 @@
-from django.shortcuts import render, redirect, reverse
+from django.shortcuts import render, redirect
+from django.contrib import messages
 from django.db.models import Count
 from django.http import HttpResponse
 from .keyUtils import KeyUtils
@@ -26,6 +27,9 @@ def grade(request):
         if form_type == 'key':
             ku = KeyUtils()
             path, key = ku.keyType(img.id)
+            if type(path) == bool:
+                messages.error(request, 'Something went wrong. Please try again.')
+                return redirect('/home/#submitForm')
 
             utils.uploadToDOSpaces(path)
             modelUtils.updateResult(img.id, path)
@@ -33,6 +37,9 @@ def grade(request):
         elif form_type == 'answer':
             au = AnswerUtils()
             path, correct, wrong, score = au.answerType(img.id, request.user.email)
+            if type(path) == bool:
+                messages.error(request, 'Something went wrong. Please try again.')
+                return redirect('/home/#submitForm')
 
             keyImg, key = au.answerKey(request.user.email)
             answerKey = AnswerKey.objects.get(image_id=keyImg)

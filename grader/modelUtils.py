@@ -34,11 +34,16 @@ class ModelUtils:
         return store
 
     def storeSummary(self, score, answer_key_id, grade_detail_id):
-        store = GradeSummary()
-        store.score = score
-        store.answer_key_id = answer_key_id
-        store.grade_detail_id = grade_detail_id
-        store.save()
+        if GradeSummary.objects.filter(answer_key_id=answer_key_id, grade_detail_id=grade_detail_id).exists():
+            update = GradeSummary.objects.get(answer_key_id=answer_key_id, grade_detail_id=grade_detail_id)
+            update.score = score
+            update.save()
+        else:
+            store = GradeSummary()
+            store.score = score
+            store.answer_key_id = answer_key_id
+            store.grade_detail_id = grade_detail_id
+            store.save()
 
         return True
 

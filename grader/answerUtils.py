@@ -16,6 +16,9 @@ class AnswerUtils:
         preprocessed = utils.roiPreprocessing(path)
 
         result, correct, wrong = self.answerProcess(path, features, preprocessed, key)
+        if type(result) == bool:
+            return False, False, False, False
+            
         score = self.scoring(correct, wrong, features['max_mark'])
 
         basename = os.path.basename(img.form_image.name)
@@ -41,6 +44,11 @@ class AnswerUtils:
 
         contours, hierarchy = cv2.findContours(preprocessed, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
         questions = utils.find_questions(contours, img)
+
+        totalBubbles = features['max_q'] * features['choices']
+        if len(questions) != totalBubbles:
+            return False, False, False
+
         questionCnts = utils.find_ques_cnts(questions, features['width'])
 
         for (q, i) in enumerate(np.arange(0, len(questionCnts), features['choices'])):

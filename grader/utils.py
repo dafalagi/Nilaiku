@@ -1,10 +1,11 @@
 from django.conf import settings
 from django.http import HttpResponse
 from django.core.files.base import ContentFile
-from .models import ImgFeatures, Image, GradeDetail
-from .forms import KeyForm, AnswerForm
+from django.shortcuts import redirect
 from imutils.perspective import four_point_transform
 from decouple import config
+from .models import ImgFeatures, Image, GradeDetail
+from .forms import KeyForm, AnswerForm
 import numpy as np
 import tinify, cv2, os, xlsxwriter, io, boto3
 
@@ -88,6 +89,16 @@ class Utils:
 
     def warping(self, file):
         img = cv2.imread('media/'+file.name)
+
+        if (img.shape[1] > 2000 or img.shape[0] > 4000):
+            scale_percent = 43
+            widthImg = int(img.shape[1] * scale_percent / 100)
+            heightImg = int(img.shape[0] * scale_percent / 100)
+            dim = (widthImg, heightImg)
+
+            img = cv2.resize(img, dim)
+            cv2.imwrite('media/'+file.name, img)
+            
         preprocessed = self.ogPreprocessing(file)
 
         contours, hierarchy = cv2.findContours(preprocessed, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
@@ -127,7 +138,7 @@ class Utils:
 
     def deleteImage(self, user_id):
         images = Image.objects.filter(user_id=user_id)
-        media_dir = settings.MEDIA_ROOT
+        media_dir = os.path.join(settings.BASE_DIR, 'media/')
 
         for img in images:
             if img.form_image:
@@ -199,20 +210,45 @@ class Utils:
         return result
 
     def writeExcel(self, summaries, email):
-        filename = email+'_'+summaries[0].created_at.strftime("%d%m%Y")+'.xlsx'
+        date = summaries[0].created_at.strftime("%d/%m/%Y")
+        filename = email+'_'+date+'.xlsx'
+
         output = io.BytesIO()
         workbook = xlsxwriter.Workbook(output, {'in_memory': True})
         worksheet = workbook.add_worksheet()
 
-        row = 0
+        header_format = workbook.add_format({
+            'bold': True,
+            'border': 1,
+            'align': 'center',
+        })
+        content_format = workbook.add_format({
+            'border': 1,
+        })
+        no_format = workbook.add_format({
+            'border': 1,
+            'align': 'center',
+        })
+        bold = workbook.add_format({'bold': True})
+
+        worksheet.write(1, 1, 'Tanggal Penilaian:', bold)
+        worksheet.write(1, 2, date)
+        worksheet.write(3, 0, 'No', header_format)
+        worksheet.write(3, 1, 'Nama', header_format)
+        worksheet.write(3, 2, 'Kelas', header_format)
+        worksheet.write(3, 3, 'Nilai', header_format)
+
+        row = 4
         col = 0
+        no = 1
 
         for summary in summaries:
             gradeDetail = GradeDetail.objects.get(id=summary.grade_detail_id)
 
-            worksheet.write(row, col, gradeDetail.name)
-            worksheet.write(row, col+1, gradeDetail.classes)
-            worksheet.write(row, col+2, summary.score)
+            worksheet.write(row, col, no, no_format)
+            worksheet.write(row, col+1, gradeDetail.name, content_format)
+            worksheet.write(row, col+2, gradeDetail.classes, content_format)
+            worksheet.write(row, col+3, summary.score, content_format)
             row += 1
 
         workbook.close()
