@@ -29,12 +29,14 @@ class AnswerUtils:
 
     def answerKey(self, email):
         user = User.objects.get(email=email)
-        keyImg = Image.objects.filter(user=user, form_type='key').order_by('-id')[0]
+        keyImgs = Image.objects.filter(user=user, form_type='key').order_by('-id')
 
-        answer = AnswerKey.objects.get(image_id=keyImg)
-        key = json.loads(answer.answer_key)
+        for keyImg in keyImgs:
+            if AnswerKey.objects.filter(image_id=keyImg).exists():
+                answer = AnswerKey.objects.get(image_id=keyImg)
+                key = json.loads(answer.answer_key)
 
-        return keyImg, key
+                return keyImg, key
 
     def answerProcess(self, path, features, preprocessed, key):
         img = cv2.imread(path)
