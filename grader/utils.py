@@ -250,6 +250,7 @@ class Utils:
             worksheet.write(row, col+2, gradeDetail.classes, content_format)
             worksheet.write(row, col+3, summary.score, content_format)
             row += 1
+            no += 1
 
         workbook.close()
         output.seek(0)

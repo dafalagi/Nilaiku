@@ -13,6 +13,9 @@ import json, os, mimetypes
 
 # Create your views here.
 def grade(request):
+    if not request.user.is_authenticated:
+        return redirect('login')
+        
     modelUtils = ModelUtils()
     upload = modelUtils.upload(request)
 
@@ -71,6 +74,9 @@ def grade(request):
         })
 
 def gradeSummary(request):
+    if not request.user.is_authenticated:
+        return redirect('login')
+        
     if request.method == 'POST':
         answerKey = AnswerKey.objects.get(id=request.POST['key_id'])
         summaries = GradeSummary.objects.filter(answer_key_id=answerKey)
