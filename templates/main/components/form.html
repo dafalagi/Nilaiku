@@ -74,6 +74,10 @@
             </div>
             <div id="grade_details" style="display: none;">
               <div class="form-group mt-3">
+                <label for="student_id">Nomor Peserta</label>
+                <input type="text" class="form-control mt-2" name="student_id" id="student_id" required>
+              </div>
+              <div class="form-group mt-3">
                 <label for="name">Nama</label>
                 <input type="text" class="form-control mt-2" name="name" id="name" required>
               </div>
@@ -104,6 +108,7 @@
     var features = document.getElementById("features");
     var max_mark = document.getElementById("max_mark");
     var grade_details = document.getElementById("grade_details");
+    var name = document.getElementById("student_id");
     var name = document.getElementById("name");
     var classes = document.getElementById("classes");
 
@@ -118,6 +123,7 @@
       grade_details.style.display = "block";
     } else {
       grade_details.style.display = "none";
+      student_id.required = false;
       name.required = false;
       classes.required = false;
     }

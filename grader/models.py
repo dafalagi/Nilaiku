@@ -36,6 +36,7 @@ class AnswerKey(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
 class GradeDetail(models.Model):
+    student_id = models.CharField(max_length=255)
     name = models.CharField(max_length=255)
     classes = models.CharField(max_length=255)
     created_at = models.DateTimeField(auto_now_add=True)

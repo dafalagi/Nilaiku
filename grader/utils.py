@@ -195,10 +195,8 @@ class Utils:
             answer = AnswerForm(request.POST)
 
             if answer.is_valid():
-                if GradeDetail.objects.filter(name=answer.cleaned_data['name'], 
-                classes=answer.cleaned_data['classes']).exists():
-                    answer = GradeDetail.objects.get(name=answer.cleaned_data['name'], 
-                    classes=answer.cleaned_data['classes'])
+                if GradeDetail.objects.filter(student_id=answer.cleaned_data['student_id']).exists():
+                    answer = GradeDetail.objects.get(student_id=answer.cleaned_data['student_id'])
                 else:
                     answer = answer.save()
 
@@ -234,9 +232,10 @@ class Utils:
         worksheet.write(1, 1, 'Tanggal Penilaian:', bold)
         worksheet.write(1, 2, date)
         worksheet.write(3, 0, 'No', header_format)
-        worksheet.write(3, 1, 'Nama', header_format)
-        worksheet.write(3, 2, 'Kelas', header_format)
-        worksheet.write(3, 3, 'Nilai', header_format)
+        worksheet.write(3, 1, 'Nomor Peserta', header_format)
+        worksheet.write(3, 2, 'Nama', header_format)
+        worksheet.write(3, 3, 'Kelas', header_format)
+        worksheet.write(3, 4, 'Nilai', header_format)
 
         row = 4
         col = 0
@@ -246,9 +245,10 @@ class Utils:
             gradeDetail = GradeDetail.objects.get(id=summary.grade_detail_id)
 
             worksheet.write(row, col, no, no_format)
-            worksheet.write(row, col+1, gradeDetail.name, content_format)
-            worksheet.write(row, col+2, gradeDetail.classes, content_format)
-            worksheet.write(row, col+3, summary.score, content_format)
+            worksheet.write(row, col+1, gradeDetail.student_id, content_format)
+            worksheet.write(row, col+2, gradeDetail.name, content_format)
+            worksheet.write(row, col+3, gradeDetail.classes, content_format)
+            worksheet.write(row, col+4, summary.score, content_format)
             row += 1
             no += 1
 
