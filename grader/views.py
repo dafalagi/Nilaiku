@@ -56,16 +56,17 @@ def grade(request):
         if form_type == 'key':
             result = {
                 'img': img.result_image,
-                'key': key,
                 'form_type': form_type
             }
         elif form_type == 'answer':
+            student = GradeDetail.objects.get(id=upload['grade_detail_id'])
             result = {
+                'name': student.name,
+                'classes': student.classes,
                 'img': img.result_image,
                 'correct': correct,
                 'wrong': wrong,
                 'score': "%.1f" % score,
-                'key': key,
                 'form_type': form_type
             }
             

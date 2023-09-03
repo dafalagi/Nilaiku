@@ -195,8 +195,8 @@ class Utils:
             answer = AnswerForm(request.POST)
 
             if answer.is_valid():
-                if GradeDetail.objects.filter(student_id=answer.cleaned_data['student_id']).exists():
-                    answer = GradeDetail.objects.get(student_id=answer.cleaned_data['student_id'])
+                if GradeDetail.objects.filter(name=answer.cleaned_data['name']).exists():
+                    answer = GradeDetail.objects.get(name=answer.cleaned_data['name'])
                 else:
                     answer = answer.save()
 
@@ -240,10 +240,15 @@ class Utils:
         row = 4
         col = 0
         no = 1
+        students = []
 
         for summary in summaries:
             gradeDetail = GradeDetail.objects.get(id=summary.grade_detail_id)
+            students.append(gradeDetail)
 
+        students.sort(key=lambda x: x.name)
+
+        for gradeDetail in students:
             worksheet.write(row, col, no, no_format)
             worksheet.write(row, col+1, gradeDetail.student_id, content_format)
             worksheet.write(row, col+2, gradeDetail.name, content_format)

@@ -1,0 +1,6 @@
+<select class="form-select" aria-label="name" name="name">
+<option value="">---------</option>
+{% for student in students %}
+    <option value="{{ student.name }}">{{ student.name }}</option>
+{% endfor %}
+</select>

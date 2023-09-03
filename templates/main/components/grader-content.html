@@ -39,6 +39,9 @@ margin-top: 70px;
         <div class="col-lg-6 col-md-6 portfolio-item filter-web">
           
           {% if result.form_type == "answer" %}
+            <h5>Nama: {{ result.name }}</h5>
+            <h5>Kelas: {{ result.classes }}</h5>
+            <br>
             <h5>Benar: {{ result.correct }}</h5>
             <h5>Salah: {{ result.wrong }}</h5>
             <br>
