@@ -62,12 +62,11 @@ def grade(request):
             teacher_course = TeacherCourse.objects.get(id=exam.teacher_course_id)
             teacher = Teacher.objects.get(id=teacher_course.teacher_id)
             course = Course.objects.get(id=teacher_course.course_id)
-            
+
             result = {
                 'img': img.result_image,
                 'teacher': teacher.name,
                 'course': course.name,
-                'classes': exam.classes,
                 'date': exam.date,
                 'form_type': form_type
             }
