@@ -41,6 +41,42 @@ class GradeDetail(models.Model):
     classes = models.CharField(max_length=255)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    
+class Teacher(models.Model):
+    name = models.CharField(max_length=255)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+class Course(models.Model):
+    name = models.CharField(max_length=255)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+class TeacherCourse(models.Model):
+    teacher = models.ForeignKey(
+        Teacher, 
+        on_delete=models.CASCADE,
+        )
+    course = models.ForeignKey(
+        Course, 
+        on_delete=models.CASCADE,
+        )
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+class Exam(models.Model):
+    user = models.ForeignKey(
+        User, 
+        on_delete=models.CASCADE,
+        )
+    teacher_course = models.ForeignKey(
+        TeacherCourse, 
+        on_delete=models.CASCADE,
+        )
+    classes = models.CharField(max_length=255)
+    date = models.DateField()
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
 class GradeSummary(models.Model):
     answer_key = models.ForeignKey(
@@ -49,6 +85,10 @@ class GradeSummary(models.Model):
         )
     grade_detail = models.ForeignKey(
         GradeDetail, 
+        on_delete=models.CASCADE,
+        )
+    exam = models.ForeignKey(
+        Exam, 
         on_delete=models.CASCADE,
         )
     score = models.IntegerField()

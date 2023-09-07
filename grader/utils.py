@@ -4,7 +4,7 @@ from django.core.files.base import ContentFile
 from django.shortcuts import redirect
 from imutils.perspective import four_point_transform
 from decouple import config
-from .models import ImgFeatures, Image, GradeDetail
+from .models import ImgFeatures, Image, GradeDetail, Teacher, Course, TeacherCourse, Exam, GradeSummary
 from .forms import KeyForm, AnswerForm
 import numpy as np
 import tinify, cv2, os, xlsxwriter, io, boto3
@@ -180,25 +180,22 @@ class Utils:
         return imgPath
 
     def storeForm(self, request, upload):
-        if (upload.form_type == 'key'):    
-                key = KeyForm(request.POST)
+        if (upload.form_type == 'key'):
+            key = KeyForm(request.POST)
 
-                if key.is_valid():
-                    key = key.save(commit=False)
-                    key.image = upload
-                    key.save()
+            if key.is_valid():
+                key = key.save(commit=False)
+                key.image = upload
+                key.save()
 
-                    result = {
-                        'img_id': upload.id
-                    }
+                result = {
+                    'img_id': upload.id
+                }
         elif (upload.form_type == 'answer'):
             answer = AnswerForm(request.POST)
 
             if answer.is_valid():
-                if GradeDetail.objects.filter(name=answer.cleaned_data['name']).exists():
-                    answer = GradeDetail.objects.get(name=answer.cleaned_data['name'])
-                else:
-                    answer = answer.save()
+                answer = GradeDetail.objects.get(name=answer.cleaned_data['name'])
 
                 result = {
                     'img_id': upload.id,
@@ -207,9 +204,19 @@ class Utils:
         
         return result
 
-    def writeExcel(self, summaries, email):
-        date = summaries[0].created_at.strftime("%d/%m/%Y")
-        filename = email+'_'+date+'.xlsx'
+    def writeExcel(self, exam_id):
+        summaries = GradeSummary.objects.filter(exam_id=exam_id)
+        exam = Exam.objects.get(id=exam_id)
+        teacher_course = TeacherCourse.objects.get(id=exam.teacher_course_id)
+        teacher = Teacher.objects.get(id=teacher_course.teacher_id)
+        course = Course.objects.get(id=teacher_course.course_id)
+
+        teacher = teacher.name
+        course = course.name
+        classes = exam.classes
+        date = exam.date.strftime("%d/%m/%Y")
+
+        filename = course+"_"+classes+"_"+date+".xlsx"
 
         output = io.BytesIO()
         workbook = xlsxwriter.Workbook(output, {'in_memory': True})
@@ -229,21 +236,28 @@ class Utils:
         })
         bold = workbook.add_format({'bold': True})
 
-        worksheet.write(1, 1, 'Tanggal Penilaian:', bold)
-        worksheet.write(1, 2, date)
-        worksheet.write(3, 0, 'No', header_format)
-        worksheet.write(3, 1, 'Nomor Peserta', header_format)
-        worksheet.write(3, 2, 'Nama', header_format)
-        worksheet.write(3, 3, 'Kelas', header_format)
-        worksheet.write(3, 4, 'Nilai', header_format)
+        worksheet.write(1, 1, 'Guru:', bold)
+        worksheet.write(1, 2, teacher)
+        worksheet.write(2, 1, 'Mata Pelajaran:', bold)
+        worksheet.write(2, 2, course)
+        worksheet.write(3, 1, 'Kelas:', bold)
+        worksheet.write(3, 2, classes)
+        worksheet.write(4, 1, 'Tanggal Ujian:', bold)
+        worksheet.write(4, 2, date)
+        worksheet.write(6, 0, 'No', header_format)
+        worksheet.write(6, 1, 'Nomor Peserta', header_format)
+        worksheet.write(6, 2, 'Nama', header_format)
+        worksheet.write(6, 3, 'Kelas', header_format)
+        worksheet.write(6, 4, 'Nilai', header_format)
 
-        row = 4
+        row = 7
         col = 0
         no = 1
         students = []
 
         for summary in summaries:
             gradeDetail = GradeDetail.objects.get(id=summary.grade_detail_id)
+            gradeDetail.score = summary.score
             students.append(gradeDetail)
 
         students.sort(key=lambda x: x.name)
@@ -253,7 +267,7 @@ class Utils:
             worksheet.write(row, col+1, gradeDetail.student_id, content_format)
             worksheet.write(row, col+2, gradeDetail.name, content_format)
             worksheet.write(row, col+3, gradeDetail.classes, content_format)
-            worksheet.write(row, col+4, summary.score, content_format)
+            worksheet.write(row, col+4, gradeDetail.score, content_format)
             row += 1
             no += 1
 

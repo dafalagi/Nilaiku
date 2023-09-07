@@ -45,7 +45,13 @@ margin-top: 70px;
             <h5>Benar: {{ result.correct }}</h5>
             <h5>Salah: {{ result.wrong }}</h5>
             <br>
-            <h4>Nilai: {{ result.score }}</h4>  
+            <h4>Nilai: {{ result.score }}</h4>
+          {% elif result.form_type == 'key' %}
+            <h5>Guru: {{ result.teacher }}</h5>
+            <h5>Mata Pelajaran: {{ result.course }}</h5>
+            <br>
+            <h5>Kelas: {{ result.classes }}</h5>
+            <h5>Tanggal Ujian: {{ result.date|date:"d-m-Y" }}</h5>
           {% endif %}
 
         </div>

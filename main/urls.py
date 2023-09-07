@@ -27,6 +27,7 @@ urlpatterns = [
     path('user/', include('user.urls')),
     path('grader/', include('grader.urls')),
     path('home/', views.home, name='home'),
+    path('load_teachers/', views.load_teachers, name='load_teachers'),
     path('load_students/', views.load_students, name='load_students'),
 ]
 

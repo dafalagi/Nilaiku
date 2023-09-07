@@ -6,7 +6,7 @@ from .keyUtils import KeyUtils
 from .answerUtils import AnswerUtils
 from .modelUtils import ModelUtils
 from .utils import Utils 
-from .models import Image, AnswerKey, GradeDetail, GradeSummary
+from .models import Image, AnswerKey, GradeDetail, GradeSummary, Exam, Teacher, Course, TeacherCourse
 from user.models import User
 import grader.models as models
 import json, os, mimetypes
@@ -31,35 +31,50 @@ def grade(request):
             ku = KeyUtils()
             path, key = ku.keyType(img.id)
             if type(path) == bool:
-                messages.error(request, 'Something went wrong. Please try again.')
+                messages.error(request, 'Terjadi kesalahan! Silahkan unggah kembali foto LJK anda.')
                 return redirect('/home/#submitForm')
 
             utils.uploadToDOSpaces(path)
             modelUtils.updateResult(img.id, path)
-            modelUtils.storeKey(img.id, key)
+
+            answer_key = modelUtils.storeKey(img.id, key)
+            request.session['answer_key_id'] = answer_key.id
         elif form_type == 'answer':
-            au = AnswerUtils()
-            path, correct, wrong, score = au.answerType(img.id, request.user.email)
-            if type(path) == bool:
-                messages.error(request, 'Something went wrong. Please try again.')
+            if request.session.get('answer_key_id') is None:
+                messages.error(request, 'Kunci jawaban tidak ditemukan! Silahkan unggah kunci jawaban terlebih dahulu.')
                 return redirect('/home/#submitForm')
 
-            keyImg, key = au.answerKey(request.user.email)
-            answerKey = AnswerKey.objects.get(image_id=keyImg)
+            au = AnswerUtils()
+            path, correct, wrong, score = au.answerType(img.id, request.session.get('answer_key_id'))
+            if type(path) == bool:
+                messages.error(request, 'Terjadi kesalahan! Silahkan unggah kembali foto LJK anda.')
+                return redirect('/home/#submitForm')
 
             utils.uploadToDOSpaces(path)
             modelUtils.updateResult(img.id, path)
-            modelUtils.storeSummary(score, answerKey.id, upload['grade_detail_id'])
+            modelUtils.storeSummary(score, request.session.get('answer_key_id'), upload['grade_detail_id'], request.session.get('exam_id'))
 
         img = Image.objects.get(id=img.id)
 
         if form_type == 'key':
+            user = User.objects.get(email=request.user.email)
+            exam = Exam.objects.filter(user_id=user.id).order_by('-id')[0]
+            teacher_course = TeacherCourse.objects.get(id=exam.teacher_course_id)
+            teacher = Teacher.objects.get(id=teacher_course.teacher_id)
+            course = Course.objects.get(id=teacher_course.course_id)
+            
             result = {
                 'img': img.result_image,
+                'teacher': teacher.name,
+                'course': course.name,
+                'classes': exam.classes,
+                'date': exam.date,
                 'form_type': form_type
             }
         elif form_type == 'answer':
             student = GradeDetail.objects.get(id=upload['grade_detail_id'])
+            request.session['student_id'] = student.id + 1
+
             result = {
                 'name': student.name,
                 'classes': student.classes,
@@ -79,34 +94,37 @@ def gradeSummary(request):
         return redirect('login')
         
     if request.method == 'POST':
-        answerKey = AnswerKey.objects.get(id=request.POST['key_id'])
-        summaries = GradeSummary.objects.filter(answer_key_id=answerKey)
-
         utils = Utils()
-        if utils.writeExcel(summaries, request.user.email):
-            response = utils.writeExcel(summaries, request.user.email)
+        if utils.writeExcel(request.POST['exam_id']):
+            response = utils.writeExcel(request.POST['exam_id'])
 
             return response
 
     if User.objects.filter(email=request.user.email).exists():
         user = User.objects.get(email=request.user.email)
-        keyImgs = Image.objects.filter(user=user, form_type='key')
+        exams = Exam.objects.filter(user_id=user.id)
 
-        for keyImg in keyImgs:
-            if AnswerKey.objects.filter(image_id=keyImg).exists():
-                key = AnswerKey.objects.get(image_id=keyImg)
-                summaries = (GradeSummary.objects
-                    .values('answer_key_id')
-                    .annotate(dcount=Count('answer_key_id'))
-                    .order_by()
-                )
+        summaries = []
+        for exam in exams:
+            if exam.classes == 'False':
+                exam.delete()
+            else:
+                teacher_course = TeacherCourse.objects.get(id=exam.teacher_course_id)
+                teacher = Teacher.objects.get(id=teacher_course.teacher_id)
+                course = Course.objects.get(id=teacher_course.course_id)
 
-        keys = []
-        for summary in summaries:
-            keys.append(AnswerKey.objects.get(id=summary['answer_key_id']))
+                summary = {
+                    'teacher': teacher.name,
+                    'course': course.name,
+                    'classes': exam.classes,
+                    'date': exam.date,
+                    'exam_id': exam.id,
+                }
+
+                summaries.append(summary)
 
         return render(request, 'main/pages/summary.html', {
-            'keys': keys
+            'summaries': summaries
         })
     else:
         return render(request, 'main/pages/summary.html')

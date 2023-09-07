@@ -1,0 +1,10 @@
+<select class="form-select" aria-label="name" name="name">
+    <option value="">---------</option>
+    {% for student in context.students %}
+        {% if student.id == request.session.student_id %}
+            <option value="{{ student.name }}" selected>{{ student.name }}</option>
+        {% else %}
+            <option value="{{ student.name }}">{{ student.name }}</option>
+        {% endif %}
+    {% endfor %}
+</select>

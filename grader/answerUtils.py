@@ -5,11 +5,11 @@ import numpy as np
 import cv2, json, os
 
 class AnswerUtils:
-    def answerType(self, img_id, email):
+    def answerType(self, img_id, answer_key_id):
         img = Image.objects.get(id=img_id)
         path = 'media/'+img.warped_image.name
 
-        keyImg, key = self.answerKey(email)
+        keyImg, key = self.answerKey(answer_key_id)
 
         utils = Utils()
         features = utils.imgFeatures(keyImg.id)
@@ -27,16 +27,13 @@ class AnswerUtils:
 
         return path, correct, wrong, score
 
-    def answerKey(self, email):
-        user = User.objects.get(email=email)
-        keyImgs = Image.objects.filter(user=user, form_type='key').order_by('-id')
+    def answerKey(self, answer_key_id):
+        if AnswerKey.objects.filter(id=answer_key_id).exists():
+            answer = AnswerKey.objects.get(id=answer_key_id)
+            keyImg = Image.objects.get(id=answer.image_id)
+            key = json.loads(answer.answer_key)
 
-        for keyImg in keyImgs:
-            if AnswerKey.objects.filter(image_id=keyImg).exists():
-                answer = AnswerKey.objects.get(image_id=keyImg)
-                key = json.loads(answer.answer_key)
-
-                return keyImg, key
+            return keyImg, key
 
     def answerProcess(self, path, features, preprocessed, key):
         img = cv2.imread(path)

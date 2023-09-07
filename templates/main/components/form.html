@@ -39,32 +39,31 @@
               </div>
             </div>
             <div id="features" style="display: none;">
+              <input type="hidden" name="height" value="10">
+              <input type="hidden" name="choices" value="5">
+              <input type="hidden" name="max_q" value="40">
               <div class="row mt-3">
-                <label for="height">Tinggi LJK</label>
+                <label for="course">Mata Pelajaran</label>
                 <div class="col-md-2 form-group mt-2">
-                  <select class="form-select" aria-label="height" name="height" id="height">
-                    <option value="10">10 Nomor</option>
-                    <option value="15">15 Nomor</option>
-                    <option value="20">20 Nomor</option>
+                  <select class="form-select" aria-label="course" name="course" id="course"
+                  hx-get="{% url 'load_teachers' %}" hx-trigger="change" hx-target="#teacher">
+                    <option value="False">---------</option>
+                    {% for course in context.courses %}
+                      <option value="{{ course.id }}">{{ course.name }}</option>
+                    {% endfor %}
                   </select>
                 </div>
               </div>
               <div class="row mt-3">
-                <label for="choices">Jumlah Pilihan Jawaban</label>
-                <div class="col-md-2 form-group mt-2">
-                  <select class="form-select" aria-label="choices" name="choices" id="choices">
-                    <option value="4">4 (ABCD)</option>
-                    <option value="5">5 (ABCDE)</option>
-                  </select>
+                <label for="teacher">Guru</label>
+                <div class="col-md-2 form-group mt-2" id="teacher">
+                  {% include 'main/components/load-teachers.html' %}
                 </div>
               </div>
               <div class="row mt-3">
-                <label for="max_q">Total Nomor</label>
+                <label for="date">Tanggal Ujian</label>
                 <div class="col-md-2 form-group mt-2">
-                  <select class="form-select" aria-label="max_q" name="max_q" id="max_q">
-                    <option value="40">40 Nomor</option>
-                    <option value="50">50 Nomor</option>
-                  </select>
+                  <input type='date' class="form-control" name="date">
                 </div>
               </div>
               <div class="form-group mt-3">
@@ -78,9 +77,13 @@
                 <div class="col-md-2 form-group mt-2">
                   <select class="form-select" aria-label="classes" name="classes" id="classes"
                   hx-get="{% url 'load_students' %}" hx-trigger="change" hx-target="#name">
-                    <option value="">---------</option>
-                    {% for class in classes %}
-                      <option value="{{ class }}">{{ class }}</option>
+                    <option value="False">---------</option>
+                    {% for class in context.classes %}
+                      {% if class == request.session.classes %}
+                        <option value="{{ class }}" selected>{{ class }}</option>
+                      {% else %}
+                        <option value="{{ class }}">{{ class }}</option>
+                      {% endif %}
                     {% endfor %}
                   </select>
                 </div>
@@ -88,7 +91,7 @@
               <div class="row mt-3">
                 <label for="name">Nama</label>
                 <div class="col-md-2 form-group mt-2" id="name">
-                  {% include 'main/components/name_select.html' %}
+                  {% include 'main/components/load-students.html' %}
                 </div>
               </div>
             </div>
@@ -114,8 +117,6 @@
     var features = document.getElementById("features");
     var max_mark = document.getElementById("max_mark");
     var grade_details = document.getElementById("grade_details");
-    var name = document.getElementById("name");
-    var classes = document.getElementById("classes");
 
     if (form_type == "key") {
       features.style.display = "block";
@@ -128,8 +129,6 @@
       grade_details.style.display = "block";
     } else {
       grade_details.style.display = "none";
-      name.required = false;
-      classes.required = false;
     }
   }
 </script>
